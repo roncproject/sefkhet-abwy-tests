@@ -1,0 +1,17 @@
+{
+  "name": "sefkhet-abwy-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "End-to-end tests for the SEFKHET-ABWY map app",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

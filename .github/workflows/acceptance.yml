@@ -1,0 +1,47 @@
+name: Acceptance tests
+
+# Runs the tests against the acceptance environment. Its address and the
+# Vercel protection bypass value are repository secrets, so neither appears
+# in this public repo or its logs.
+#
+# Pull requests here only check that the tests load; they cannot see the
+# secrets, by design, so they never reach the acceptance environment.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * 1'
+  pull_request:
+    branches: [main]
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Tests load
+        run: npx playwright test --list
+        env:
+          BASE_URL: http://localhost:4173
+
+      - name: Install browser
+        if: github.event_name != 'pull_request'
+        run: npx playwright install --with-deps chromium
+
+      - name: Run against acceptance
+        if: github.event_name != 'pull_request'
+        run: npx playwright test
+        env:
+          BASE_URL: ${{ secrets.ACCEPTANCE_URL }}
+          VERCEL_BYPASS: ${{ secrets.VERCEL_BYPASS }}
+
+      # No report or trace upload: artifacts of a public repo can be
+      # downloaded by anyone, and traces record request headers.
