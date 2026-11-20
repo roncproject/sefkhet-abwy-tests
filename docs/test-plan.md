@@ -14,8 +14,8 @@ running copy.
 
 **In scope**
 
-- The map: device and IP position, monuments near the map centre, counts when
-  zoomed out, the monument card, map controls.
+- The map: device and IP position, monuments and public artworks near the map
+  centre, counts when zoomed out, the monument and artwork cards, map controls.
 - The panels: About, Legal and Contact, by menu and by direct address.
 - The server functions: `/api/health`, `/api/geo`, `/api/places` (through the
   map) and `/api/monument-counts`.
