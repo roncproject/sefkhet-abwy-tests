@@ -21,7 +21,8 @@ is refused.
 | `tests/panels.spec.js` | `/about`, `/legal` and `/contact` open directly · the menu opens a panel and Back closes it · Close on a directly opened panel returns to the map |
 | `tests/platform.spec.js` | Pages carry a Content-Security-Policy and the app runs under it without violations · `/api/health` answers · `/api/geo` without location headers, with Vercel's, and preferring Cloudflare's · `/api/monument-counts` refuses missing and oversized boxes · the PWA manifest and service worker |
 
-23 tests in all.
+23 tests in all. The [test plan](docs/test-plan.md) describes the levels,
+environments, test data, entry and exit criteria, and known gaps.
 
 ## Running them
 
