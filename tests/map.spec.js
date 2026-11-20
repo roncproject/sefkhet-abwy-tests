@@ -8,7 +8,7 @@
  * catch swapped latitude and longitude. The first stubbed monument sits at the
  * device position, which is the centre of the map, so a click there hits it.
  */
-import { test, expect, waitForMap, DEVICE, PLACES } from './fixtures.js';
+import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK } from './fixtures.js';
 
 async function mapCentre(page) {
   const box = await page.getByRole('application', { name: 'Map centred on your location' }).boundingBox();
@@ -78,6 +78,26 @@ test('clicking a monument opens its card with a link to the register', async ({ 
 
   await page.keyboard.press('Escape');
   await expect(card).toBeHidden();
+});
+
+test('clicking a public artwork opens its card with artist, year and a Wikidata link', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork({ places: [ARTWORK] });
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+
+  const { x, y } = await mapCentre(page);
+  const card = page.getByRole('region', { name: `Artwork: ${ARTWORK.name}` });
+  await expect(async () => {
+    await page.mouse.click(x, y);
+    await expect(card).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
+
+  await expect(card).toContainText(`${ARTWORK.artists} · ${ARTWORK.year}`);
+  await expect(card).toContainText(ARTWORK.type);
+  const link = card.getByRole('link', { name: `Wikidata ${ARTWORK.id}` });
+  await expect(link).toHaveAttribute('href', ARTWORK.url);
+  await expect(link).toHaveAttribute('target', '_blank');
 });
 
 /** The device fix (accuracy 20 m) opens at zoom 17; four steps out is zoom 13, below street level. */
