@@ -1,7 +1,35 @@
 /**
- * The parts around the app: the server functions and the PWA install files.
+ * The parts around the app: the server functions, the security headers and
+ * the PWA install files.
  */
-import { test, expect } from './fixtures.js';
+import { test, expect, waitForMap } from './fixtures.js';
+
+test('pages carry a Content-Security-Policy that the app runs under without violations', async ({ page, stubNetwork }) => {
+  const { placesRequests, countsRequests } = await stubNetwork();
+  await page.addInitScript(() => {
+    window.__violations = [];
+    document.addEventListener('securitypolicyviolation', (e) => {
+      window.__violations.push(`${e.effectiveDirective} ${e.blockedURI}`);
+    });
+  });
+
+  const response = await page.goto('/');
+  expect(response.headers()['content-security-policy']).toContain("default-src 'self'");
+  await waitForMap(page);
+
+  // Without a device position the map opens at city scale and shows counts
+  // (drawn as data: images); two levels in it shows individual monuments.
+  await expect.poll(() => countsRequests.length).toBeGreaterThan(0);
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  await page.waitForTimeout(1_000);
+
+  // The ArcGIS SDK tries Function() once to find out whether eval is allowed,
+  // and adapts when it is not. That probe is expected; nothing else is.
+  const violations = await page.evaluate(() => window.__violations);
+  expect(violations.filter((v) => v !== 'script-src eval')).toEqual([]);
+});
 
 test('/api/health answers UP', async ({ request }) => {
   const res = await request.get('/api/health');
