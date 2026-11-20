@@ -37,7 +37,20 @@ test('/api/health answers UP', async ({ request }) => {
   expect(await res.json()).toMatchObject({ status: 'UP' });
 });
 
+/**
+ * On a Vercel deployment, Vercel sets the x-vercel-ip-* headers itself from
+ * the caller's real IP address; a test cannot remove or replace them. The
+ * tests that depend on them run against a local build only, where
+ * /api/health reports the environment as "development".
+ */
+async function onVercel(request) {
+  const { environment } = await (await request.get('/api/health')).json();
+  return environment !== 'development';
+}
+const VERCEL_SETS_IP_HEADERS = "Vercel sets the x-vercel-ip-* headers from the caller's real IP address";
+
 test('/api/geo answers without an IP position when location headers are missing', async ({ request }) => {
+  test.skip(await onVercel(request), VERCEL_SETS_IP_HEADERS);
   const res = await request.get('/api/geo');
   expect(res.ok()).toBe(true);
   expect(await res.json()).toEqual({ available: false, source: 'ip' });
@@ -65,6 +78,7 @@ const VERCEL_AMSTERDAM = {
 };
 
 test('/api/geo uses the Vercel headers when reached directly', async ({ request }) => {
+  test.skip(await onVercel(request), VERCEL_SETS_IP_HEADERS);
   const res = await request.get('/api/geo', { headers: VERCEL_AMSTERDAM });
   expect(await res.json()).toEqual({
     available: true, source: 'ip', latitude: 52.37403, longitude: 4.88969,
