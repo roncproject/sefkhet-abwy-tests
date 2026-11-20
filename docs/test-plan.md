@@ -76,7 +76,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-24 tests.
+27 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -85,6 +85,8 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Falls back to Rotterdam when there is no position | The app still opens with no position at all |
 | `map.spec.js` | Asks for monuments at the map centre, latitude and longitude in order | The places request carries the right coordinates, not swapped |
 | | Recovers by reloading once when a chunk is gone after a deploy | An old copy of the app recovers instead of showing an error |
+| | Asks for the places in the visible area, not a fixed circle | The request carries the visible box around the centre |
+| | Where the visible area holds too many places, shows counts at street level | A dense area shows counts instead of a cut-off set |
 | | Clicking a monument opens its card with a link to the register | Hit testing, the card's content and its link; Escape closes it |
 | | Clicking a public artwork opens its card with artist, year and a Wikidata link | The artwork card and its source link |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
@@ -99,6 +101,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | `/api/health` answers UP | The server functions run |
 | | `/api/geo` without location headers | No position is invented. *Skipped on Vercel* (§6) |
 | | `/api/monument-counts` refuses a missing or oversized box | Input checks run before any database lookup |
+| | `/api/places` refuses an incomplete or oversized box | Input checks run before any database lookup |
 | | `/api/geo` uses the Vercel headers when reached directly | Header parsing. *Skipped on Vercel* (§6) |
 | | `/api/geo` prefers the Cloudflare headers behind the proxy | Behind Cloudflare, the visitor's own position wins |
 | | Serves the manifest and registers the service worker | The app is installable |
