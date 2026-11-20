@@ -14,8 +14,8 @@ running copy.
 
 **In scope**
 
-- The map: device and IP position, monuments near the map centre, counts when
-  zoomed out, the monument card, map controls.
+- The map: device and IP position, monuments and public artworks near the map
+  centre, counts when zoomed out, the monument and artwork cards, map controls.
 - The panels: About, Legal and Contact, by menu and by direct address.
 - The server functions: `/api/health`, `/api/geo`, `/api/places` (through the
   map) and `/api/monument-counts`.
@@ -68,7 +68,7 @@ servers:
 |---|---|---|
 | Device position | The browser's geolocation | Hotel New York, Rotterdam (51.9054 N, 4.4874 E), accuracy 20 m |
 | `/api/geo` | IP position | None by default; Amsterdam in the IP-fallback test |
-| `/api/places` | Monuments near the centre | Two real Rotterdam monuments; the first moved onto the device position |
+| `/api/places` | Monuments and artworks near the centre | Two real Rotterdam monuments, the first moved onto the device position; one real Rotterdam artwork (Wikidata), likewise at the device position, for the artwork test |
 | `/api/monument-counts` | Counts per grid cell | Two cells; the first at the device position |
 | OpenStreetMap tiles | Map tiles | A one-pixel PNG |
 
@@ -76,7 +76,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-23 tests.
+24 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -86,6 +86,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | `map.spec.js` | Asks for monuments at the map centre, latitude and longitude in order | The places request carries the right coordinates, not swapped |
 | | Recovers by reloading once when a chunk is gone after a deploy | An old copy of the app recovers instead of showing an error |
 | | Clicking a monument opens its card with a link to the register | Hit testing, the card's content and its link; Escape closes it |
+| | Clicking a public artwork opens its card with artist, year and a Wikidata link | The artwork card and its source link |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |

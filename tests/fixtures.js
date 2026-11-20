@@ -30,18 +30,31 @@ export const IP_GEO = {
  */
 export const PLACES = [
   {
+    kind: 'monument',
     id: '23281.00', number: 513872, name: 'v.m. Kant. Holland Amerika Lijn', type: 'Kantoorgebouw',
     address: 'Koninginnenhoofd 1', place: 'Rotterdam',
     url: 'https://monumentenregister.cultureelerfgoed.nl/monumenten/513872',
     latitude: DEVICE.latitude, longitude: DEVICE.longitude,
   },
   {
+    kind: 'monument',
     id: '19826.00', number: 32847, name: null, type: 'Vergadering en vereniging',
     address: 'Veerkade 10', place: 'Rotterdam',
     url: 'https://monumentenregister.cultureelerfgoed.nl/monumenten/32847',
     latitude: 51.9079, longitude: 4.4806,
   },
 ];
+
+/**
+ * A public artwork as /api/places returns it (facts from Wikidata, CC0),
+ * moved onto the device position so it sits at the map centre.
+ */
+export const ARTWORK = {
+  kind: 'artwork',
+  id: 'Q102080942', name: 'Obelisk', artists: 'Herman Makkink', year: 1991, type: 'kunstwerk',
+  url: 'https://www.wikidata.org/wiki/Q102080942',
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
 
 /**
  * What /api/monument-counts answers: one cell at the device position, so it
