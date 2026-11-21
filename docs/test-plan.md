@@ -123,7 +123,8 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
   and in app CI.
 - **Retries:** one retry in CI. A test that needs it is fixed, not tolerated.
   For example, the chunk-recovery test was rewritten when a newer browser
-  exposed a timing assumption.
+  exposed a timing assumption, and the CSP test now zooms in one step at a
+  time, since a click during a zoom animation can be lost on a slow machine.
 
 ## 7. Process
 

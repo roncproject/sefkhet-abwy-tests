@@ -19,10 +19,13 @@ test('pages carry a Content-Security-Policy that the app runs under without viol
 
   // Without a device position the map opens at city scale and shows counts
   // (drawn as data: images); two levels in it shows individual monuments.
+  // On a slow machine a click during the zoom animation can be lost, so zoom
+  // in one step at a time until the map asks for places.
   await expect.poll(() => countsRequests.length).toBeGreaterThan(0);
-  await page.getByRole('button', { name: 'Zoom in' }).click();
-  await page.getByRole('button', { name: 'Zoom in' }).click();
-  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  await expect(async () => {
+    await page.getByRole('button', { name: 'Zoom in' }).click();
+    await expect.poll(() => placesRequests.length, { timeout: 3_000 }).toBeGreaterThan(0);
+  }).toPass({ timeout: 30_000 });
   await page.waitForTimeout(1_000);
 
   // The ArcGIS SDK tries Function() once to find out whether eval is allowed,
