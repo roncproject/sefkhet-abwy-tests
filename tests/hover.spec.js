@@ -38,12 +38,32 @@ test('resting the mouse on a monument shows its name; moving off hides it', asyn
   await page.mouse.move(x + 120, y + 120);
   await expect(label).toBeHidden();
 
-  // Clicking opens the card, and no label shows while it is open.
-  await page.mouse.move(x, y);
-  await page.mouse.click(x, y);
-  await expect(page.getByRole('region', { name: /^Monument:/ })).toBeVisible();
-  await page.waitForTimeout(500);
+});
+
+test('with a card open, other markers still get a label, the open one does not', async ({ page, stubNetwork }) => {
+  // A second monument about 40 px east of the first, which sits at the centre.
+  const neighbour = { ...PLACES[1], latitude: DEVICE.latitude, longitude: DEVICE.longitude + 0.00045 };
+  const { x, y } = await openMap(page, stubNetwork, [PLACES[0], neighbour]);
+  const label = page.locator('.map-label');
+  const card = page.getByRole('region', { name: `Monument: ${PLACES[0].name}` });
+  await expect(async () => {
+    await page.mouse.click(x, y);
+    await expect(card).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
+
+  // Resting on the open monument: its card already says it all.
+  await page.mouse.move(x + 1, y + 1);
+  await page.waitForTimeout(800);
   await expect(label).toBeHidden();
+
+  // Resting on its neighbour: a label, with the card still open.
+  await expect(async () => {
+    await page.mouse.move(x + 20, y + 60);
+    await page.mouse.move(x + 42, y);
+    await expect(label).toBeVisible({ timeout: 1_500 });
+  }).toPass({ timeout: 15_000 });
+  await expect(label).toContainText(neighbour.type);
+  await expect(card).toBeVisible();
 });
 
 test('a Brussels label shows the French and Dutch name, equal; an artwork its artist and year', async ({ page, stubNetwork }) => {
