@@ -57,6 +57,36 @@ export const ARTWORK = {
 };
 
 /**
+ * Protected heritage in Brussels (urban.brussels, CC-BY 4.0) and Antwerp
+ * (Onroerend Erfgoed, Free Open Data Licence Flanders) as /api/places returns
+ * it, moved onto the device position. Real objects; the facts are unchanged.
+ * Brussels is bilingual: `names` holds each language version in display
+ * order, French first.
+ */
+export const BRUSSELS = {
+  kind: 'monument', source: 'brussels',
+  id: '171', number: null,
+  name: 'Ancien atelier et habitation de Clas Grüner Sterner / Voormalig atelier en woning van Clas Grüner Sterner',
+  names: [
+    { lang: 'fr', name: 'Ancien atelier et habitation de Clas Grüner Sterner', address: 'Rue du Lac 6', place: '1050 Ixelles' },
+    { lang: 'nl', name: 'Voormalig atelier en woning van Clas Grüner Sterner', address: 'Meerstraat 6', place: '1050 Elsene' },
+  ],
+  type: 'Monument', address: 'Rue du Lac 6 / Meerstraat 6', place: '1050 Ixelles / 1050 Elsene',
+  status: 'protected', since: '2003-10-23', reference: '2071-0119', country: 'BE',
+  url: 'https://doc.patrimoine.brussels/REGISTRE/AG/035_022.pdf',
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
+
+export const ANTWERP = {
+  kind: 'monument', source: 'flanders',
+  id: '5765', number: null, name: 'Huis Guiette', names: null,
+  type: 'Monument', address: 'Populierenlaan 32', place: 'Antwerpen',
+  status: 'protected', since: '1978-04-24', reference: '5765', country: 'BE',
+  url: 'https://inventaris.onroerenderfgoed.be/aanduidingsobjecten/5765',
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
+
+/**
  * What /api/monument-counts answers: one cell at the device position, so it
  * sits at the map centre, and one a little to the north-east.
  */

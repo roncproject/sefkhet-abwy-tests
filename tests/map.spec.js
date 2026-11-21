@@ -8,7 +8,7 @@
  * catch swapped latitude and longitude. The first stubbed monument sits at the
  * device position, which is the centre of the map, so a click there hits it.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK } from './fixtures.js';
+import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP } from './fixtures.js';
 
 async function mapCentre(page) {
   const box = await page.getByRole('application', { name: 'Map centred on your location' }).boundingBox();
@@ -108,6 +108,7 @@ test('clicking a monument opens its card with a link to the register', async ({ 
   const link = card.getByRole('link', { name: `Rijksmonument ${monument.number}` });
   await expect(link).toHaveAttribute('href', monument.url);
   await expect(link).toHaveAttribute('target', '_blank');
+  await expect(card).toContainText('Source: Rijksdienst voor het Cultureel Erfgoed (CC BY 4.0)');
 
   await page.keyboard.press('Escape');
   await expect(card).toBeHidden();
@@ -131,6 +132,58 @@ test('clicking a public artwork opens its card with artist, year and a Wikidata 
   const link = card.getByRole('link', { name: `Wikidata ${ARTWORK.id}` });
   await expect(link).toHaveAttribute('href', ARTWORK.url);
   await expect(link).toHaveAttribute('target', '_blank');
+  await expect(card).toContainText('Source: Wikidata (CC0)');
+});
+
+/** Opens the card of the single stubbed place at the map centre. */
+async function openCard(page, stubNetwork, place, name) {
+  const { placesRequests } = await stubNetwork({ places: [place] });
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  const { x, y } = await mapCentre(page);
+  const card = page.getByRole('region', { name });
+  await expect(async () => {
+    await page.mouse.click(x, y);
+    await expect(card).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
+  return card;
+}
+
+test('clicking a Brussels monument shows French and Dutch side by side and equal, with the decree', async ({ page, stubNetwork }) => {
+  const card = await openCard(page, stubNetwork, BRUSSELS, `Monument: ${BRUSSELS.name}`);
+  const [fr, nl] = BRUSSELS.names;
+
+  // Brussels is bilingual: both versions in full, with the same style, French on the left.
+  const frName = card.getByRole('heading', { name: fr.name });
+  const nlName = card.getByRole('heading', { name: nl.name });
+  for (const v of [fr, nl]) {
+    const version = card.locator(`[lang="${v.lang}"]`);
+    await expect(version).toContainText(v.name);
+    await expect(version).toContainText(v.address);
+    await expect(version).toContainText(v.place);
+  }
+  const style = (el) => el.evaluate((e) => {
+    const s = getComputedStyle(e);
+    return `${s.fontFamily} ${s.fontSize} ${s.fontWeight} ${s.fontStyle}`;
+  });
+  expect(await style(frName)).toBe(await style(nlName));
+  expect((await frName.boundingBox()).x).toBeLessThan((await nlName.boundingBox()).x);
+
+  await expect(card).toContainText('Monument · protected since 2003');
+  const link = card.getByRole('link', { name: 'Protection decree (PDF)' });
+  await expect(link).toHaveAttribute('href', BRUSSELS.url);
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(card).toContainText('Source: urban.brussels (CC BY 4.0)');
+});
+
+test('clicking an Antwerp monument opens its card with a link to the Flemish inventory', async ({ page, stubNetwork }) => {
+  const card = await openCard(page, stubNetwork, ANTWERP, `Monument: ${ANTWERP.name}`);
+  await expect(card).toContainText('Monument · protected since 1978');
+  await expect(card).toContainText(`${ANTWERP.address}`);
+  const link = card.getByRole('link', { name: `Onroerend Erfgoed ${ANTWERP.reference}` });
+  await expect(link).toHaveAttribute('href', ANTWERP.url);
+  await expect(card).toContainText('Source: Onroerend Erfgoed (Free Open Data Licence Flanders)');
 });
 
 /** The device fix (accuracy 20 m) opens at zoom 17; four steps out is zoom 13, below street level. */

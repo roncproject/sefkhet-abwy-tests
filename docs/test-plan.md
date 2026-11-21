@@ -15,7 +15,8 @@ running copy.
 **In scope**
 
 - The map: device and IP position, monuments and public artworks near the map
-  centre, counts when zoomed out, the monument and artwork cards, map controls.
+  centre, counts when zoomed out, the cards for Dutch, Brussels and Antwerp
+  monuments and for artworks, map controls.
 - The panels: About, Legal and Contact, by menu and by direct address.
 - The server functions: `/api/health`, `/api/geo`, `/api/places` (through the
   map) and `/api/monument-counts`.
@@ -68,7 +69,7 @@ servers:
 |---|---|---|
 | Device position | The browser's geolocation | Hotel New York, Rotterdam (51.9054 N, 4.4874 E), accuracy 20 m |
 | `/api/geo` | IP position | None by default; Amsterdam in the IP-fallback test |
-| `/api/places` | Monuments and artworks near the centre | Two real Rotterdam monuments, the first moved onto the device position; one real Rotterdam artwork (Wikidata), likewise at the device position, for the artwork test |
+| `/api/places` | Monuments and artworks near the centre | Two real Rotterdam monuments, the first moved onto the device position; one real Rotterdam artwork (Wikidata), one real Brussels monument (urban.brussels) and one real Antwerp monument (Onroerend Erfgoed), each likewise at the device position, for the card tests |
 | `/api/monument-counts` | Counts per grid cell | Two cells; the first at the device position |
 | OpenStreetMap tiles | Map tiles | A one-pixel PNG |
 
@@ -76,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-27 tests.
+30 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -89,6 +90,8 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Where the visible area holds too many places, shows counts at street level | A dense area shows counts instead of a cut-off set |
 | | Clicking a monument opens its card with a link to the register | Hit testing, the card's content and its link; Escape closes it |
 | | Clicking a public artwork opens its card with artist, year and a Wikidata link | The artwork card and its source link |
+| | Clicking a Brussels monument shows French and Dutch side by side and equal, with the decree | Bilingual Brussels: both names and addresses in full, the same style, French on the left; protection and decree link |
+| | Clicking an Antwerp monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |
@@ -97,6 +100,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | `panels.spec.js` | `/about`, `/legal` and `/contact` open directly (3 tests) | Every panel has a working address |
 | | The menu opens a panel and Back closes it | Menu navigation and browser history |
 | | Close on a directly opened panel returns to the map | Closing works without history |
+| | Legal credits every data source with its licence | Each source's publisher and licence, the no-copying statement and the contact address are in Legal |
 | `platform.spec.js` | Pages carry a CSP that the app runs under without violations | The policy is present and does not block the app |
 | | `/api/health` answers UP | The server functions run |
 | | `/api/geo` without location headers | No position is invented. *Skipped on Vercel* (§6) |
