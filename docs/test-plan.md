@@ -77,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-31 tests.
+36 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -98,6 +98,11 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |
 | | Zoom in and zoom out move the map | The controls work and each change reloads monuments |
 | | "Centre on my location" returns after panning | The re-centre control |
+| `hover.spec.js` | Resting the mouse on a monument shows its name; moving off hides it | The label appears after a short rest and hides on leaving |
+| | With a card open, other markers still get a label, the open one does not | Exploring continues while a card is open |
+| | A Brussels label shows the French and Dutch name, equal | Bilingual labels: both names, the same size and weight |
+| | An artwork label shows its artist and year | The label's second line per kind |
+| | On a touch screen, a tap opens the card and no label appears | Hover is for mice only |
 | `panels.spec.js` | `/about`, `/legal` and `/contact` open directly (3 tests) | Every panel has a working address |
 | | The menu opens a panel and Back closes it | Menu navigation and browser history |
 | | Close on a directly opened panel returns to the map | Closing works without history |
