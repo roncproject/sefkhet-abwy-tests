@@ -60,13 +60,24 @@ test('/api/monument-counts refuses a missing or oversized box without a lookup',
   const missing = await request.get('/api/monument-counts');
   expect(missing.status()).toBe(400);
 
-  const badZoom = await request.get('/api/monument-counts?west=4&south=51&east=5&north=52&zoom=15');
+  // Zoom 3 to 19 is the map's range; 20 is beyond it.
+  const badZoom = await request.get('/api/monument-counts?west=4.4&south=51.9&east=4.5&north=51.95&zoom=20');
   expect(badZoom.status()).toBe(400);
 
   // All of Europe at zoom 13 would be hundreds of thousands of cells.
   const tooLarge = await request.get('/api/monument-counts?west=-10&south=35&east=30&north=70&zoom=13');
   expect(tooLarge.status()).toBe(400);
   expect(await tooLarge.json()).toEqual({ error: 'the box is too large for this zoom level' });
+});
+
+test('/api/places refuses an incomplete or oversized box without a lookup', async ({ request }) => {
+  const incomplete = await request.get('/api/places?west=4.4&south=51.9&lat=51.92&lon=4.48');
+  expect(incomplete.status()).toBe(400);
+
+  // A whole province at once: far beyond the visible area at street level.
+  const tooLarge = await request.get('/api/places?west=4&south=51.5&east=5&north=52.5&lat=52&lon=4.5');
+  expect(tooLarge.status()).toBe(400);
+  expect(await tooLarge.json()).toEqual({ error: 'the box is too large; zoom in' });
 });
 
 const VERCEL_AMSTERDAM = {

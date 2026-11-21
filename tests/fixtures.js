@@ -97,12 +97,15 @@ export const test = base.extend({
    *
    * `geo` is the /api/geo answer (default: no IP location).
    * `places` is the /api/places answer (default: PLACES).
+   * `tooMany: true` makes /api/places answer that the visible area holds more
+   * places than it shows, as in a dense city centre.
    * `cells` is the /api/monument-counts answer (default: CELLS).
-   * Returns `placesRequests`, the parsed lat/lon of every /api/places call,
-   * and `countsRequests`, the parsed box and zoom of every count request.
+   * Returns `placesRequests`, the parsed centre (lat/lon) and visible box of
+   * every /api/places call, and `countsRequests`, the parsed box and zoom of
+   * every count request.
    */
   stubNetwork: async ({ context }, use) => {
-    await use(async ({ geo = { available: false, source: 'ip' }, places = PLACES, cells = CELLS } = {}) => {
+    await use(async ({ geo = { available: false, source: 'ip' }, places = PLACES, cells = CELLS, tooMany = false } = {}) => {
       const placesRequests = [];
       const countsRequests = [];
 
@@ -113,11 +116,12 @@ export const test = base.extend({
 
       await context.route('**/api/places?*', (route) => {
         const url = new URL(route.request().url());
+        const read = (k) => (url.searchParams.has(k) ? Number(url.searchParams.get(k)) : null);
         placesRequests.push({
-          lat: Number(url.searchParams.get('lat')),
-          lon: Number(url.searchParams.get('lon')),
+          lat: read('lat'), lon: read('lon'),
+          west: read('west'), south: read('south'), east: read('east'), north: read('north'),
         });
-        return route.fulfill({ json: { places } });
+        return route.fulfill({ json: tooMany ? { places: [], tooMany: true } : { places } });
       });
 
       await context.route('**/api/monument-counts?*', (route) => {

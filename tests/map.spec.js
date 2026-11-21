@@ -33,6 +33,39 @@ test('asks for nearby monuments at the map centre, latitude and longitude in ord
   expect(errors.filter((e) => e.includes('nearby monuments'))).toEqual([]);
 });
 
+test('asks for the places in the visible area, not a fixed circle', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork();
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+
+  // The box is the visible map: around the centre, and at zoom 17 a few
+  // hundred metres across (a 2 km circle would be several km).
+  const { west, south, east, north } = placesRequests[0];
+  expect(west).toBeLessThan(DEVICE.longitude);
+  expect(east).toBeGreaterThan(DEVICE.longitude);
+  expect(south).toBeLessThan(DEVICE.latitude);
+  expect(north).toBeGreaterThan(DEVICE.latitude);
+  expect(east - west).toBeLessThan(0.05);
+  expect(north - south).toBeLessThan(0.05);
+});
+
+test('where the visible area holds too many places, shows counts at street level', async ({ page, stubNetwork }) => {
+  const { placesRequests, countsRequests } = await stubNetwork({ tooMany: true });
+  await page.goto('/');
+  await waitForMap(page);
+
+  // Zoom 17 is street level, but the places answer says "too many", so the
+  // map asks for counts of the same area, at the same zoom.
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  await expect.poll(() => countsRequests.at(-1)?.zoom).toBe(17);
+  const { west, east } = countsRequests.at(-1);
+  expect(west).toBeLessThan(DEVICE.longitude);
+  expect(east).toBeGreaterThan(DEVICE.longitude);
+  // Counts are drawn, so the "zoom in" hint stays away.
+  await expect(page.getByText('Zoom in to see monuments')).toBeHidden();
+});
+
 test('recovers by reloading once when an SDK chunk is gone after a deploy', async ({ page, stubNetwork }) => {
   await stubNetwork();
   // A copy of the app kept from before a deploy asks for a chunk that is gone.
