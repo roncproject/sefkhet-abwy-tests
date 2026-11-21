@@ -8,7 +8,7 @@
  * catch swapped latitude and longitude. The first stubbed monument sits at the
  * device position, which is the centre of the map, so a click there hits it.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP } from './fixtures.js';
+import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP, WITTE_HUIS } from './fixtures.js';
 
 async function mapCentre(page) {
   const box = await page.getByRole('application', { name: 'Map centred on your location' }).boundingBox();
@@ -109,6 +109,8 @@ test('clicking a monument opens its card with a link to the register', async ({ 
   await expect(link).toHaveAttribute('href', monument.url);
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(card).toContainText('Source: Rijksdienst voor het Cultureel Erfgoed (CC BY 4.0)');
+  // No Wikipedia article is known for this monument: no link.
+  await expect(card.getByRole('link', { name: /Wikipedia/ })).toHaveCount(0);
 
   await page.keyboard.press('Escape');
   await expect(card).toBeHidden();
@@ -175,6 +177,21 @@ test('clicking a Brussels monument shows French and Dutch side by side and equal
   await expect(link).toHaveAttribute('href', BRUSSELS.url);
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(card).toContainText('Source: urban.brussels (CC BY 4.0)');
+
+  // Its Wikipedia articles, French and Dutch side by side like the names.
+  const articles = card.getByRole('link', { name: /^Wikipedia/ });
+  await expect(articles).toHaveText(['Wikipedia FR ↗', 'Wikipedia NL ↗']);
+  await expect(articles.nth(0)).toHaveAttribute('href', 'https://fr.wikipedia.org/wiki/Atelier_du_ma%C3%AEtre-verrier_Sterner');
+  await expect(articles.nth(1)).toHaveAttribute('href', 'https://nl.wikipedia.org/wiki/Atelier_van_meester-glazenier_Sterner');
+});
+
+test('a monument with a Wikipedia article links to it, in Dutch', async ({ page, stubNetwork }) => {
+  const card = await openCard(page, stubNetwork, WITTE_HUIS, `Monument: ${WITTE_HUIS.name}`);
+  const article = card.getByRole('link', { name: /^Wikipedia/ });
+  await expect(article).toHaveText('Wikipedia NL ↗');
+  await expect(article).toHaveAttribute('href', 'https://nl.wikipedia.org/wiki/Witte_Huis_(Rotterdam)');
+  await expect(article).toHaveAttribute('target', '_blank');
+  await expect(card.getByRole('link', { name: `Rijksmonument ${WITTE_HUIS.number}` })).toBeVisible();
 });
 
 test('clicking an Antwerp monument opens its card with a link to the Flemish inventory', async ({ page, stubNetwork }) => {

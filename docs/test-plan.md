@@ -69,7 +69,7 @@ servers:
 |---|---|---|
 | Device position | The browser's geolocation | Hotel New York, Rotterdam (51.9054 N, 4.4874 E), accuracy 20 m |
 | `/api/geo` | IP position | None by default; Amsterdam in the IP-fallback test |
-| `/api/places` | Monuments and artworks near the centre | Two real Rotterdam monuments, the first moved onto the device position; one real Rotterdam artwork (Wikidata), one real Brussels monument (urban.brussels) and one real Antwerp monument (Onroerend Erfgoed), each likewise at the device position, for the card tests |
+| `/api/places` | Monuments and artworks near the centre | Two real Rotterdam monuments, the first moved onto the device position; one real Rotterdam artwork (Wikidata), one real Brussels monument (urban.brussels) and one real Antwerp monument (Onroerend Erfgoed), and the Witte Huis in Rotterdam with its Wikipedia article, each likewise at the device position, for the card tests |
 | `/api/monument-counts` | Counts per grid cell | Two cells; the first at the device position |
 | OpenStreetMap tiles | Map tiles | A one-pixel PNG |
 
@@ -77,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-30 tests.
+31 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -91,6 +91,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Clicking a monument opens its card with a link to the register | Hit testing, the card's content and its link; Escape closes it |
 | | Clicking a public artwork opens its card with artist, year and a Wikidata link | The artwork card and its source link |
 | | Clicking a Brussels monument shows French and Dutch side by side and equal, with the decree | Bilingual Brussels: both names and addresses in full, the same style, French on the left; protection and decree link |
+| | A monument with a Wikipedia article links to it, in Dutch | The Wikipedia link (found through Wikidata) and its address; none where no article is known; Brussels shows French and Dutch side by side |
 | | Clicking an Antwerp monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
