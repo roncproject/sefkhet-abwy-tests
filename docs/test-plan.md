@@ -90,7 +90,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Where the visible area holds too many places, shows counts at street level | A dense area shows counts instead of a cut-off set |
 | | Clicking a monument opens its card with a link to the register | Hit testing, the card's content and its link; Escape closes it |
 | | Clicking a public artwork opens its card with artist, year and a Wikidata link | The artwork card and its source link |
-| | Clicking a Brussels monument opens its card with both names, protection year and the decree | The Brussels card: Dutch and French name, protection, decree link |
+| | Clicking a Brussels monument shows French and Dutch side by side and equal, with the decree | Bilingual Brussels: both names and addresses in full, the same style, French on the left; protection and decree link |
 | | Clicking an Antwerp monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |

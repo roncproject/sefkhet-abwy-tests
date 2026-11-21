@@ -148,12 +148,27 @@ async function openCard(page, stubNetwork, place, name) {
   return card;
 }
 
-test('clicking a Brussels monument opens its card with both names, protection year and the decree', async ({ page, stubNetwork }) => {
+test('clicking a Brussels monument shows French and Dutch side by side and equal, with the decree', async ({ page, stubNetwork }) => {
   const card = await openCard(page, stubNetwork, BRUSSELS, `Monument: ${BRUSSELS.name}`);
-  await expect(card).toContainText(BRUSSELS.names.fr);
+  const [fr, nl] = BRUSSELS.names;
+
+  // Brussels is bilingual: both versions in full, with the same style, French on the left.
+  const frName = card.getByRole('heading', { name: fr.name });
+  const nlName = card.getByRole('heading', { name: nl.name });
+  for (const v of [fr, nl]) {
+    const version = card.locator(`[lang="${v.lang}"]`);
+    await expect(version).toContainText(v.name);
+    await expect(version).toContainText(v.address);
+    await expect(version).toContainText(v.place);
+  }
+  const style = (el) => el.evaluate((e) => {
+    const s = getComputedStyle(e);
+    return `${s.fontFamily} ${s.fontSize} ${s.fontWeight} ${s.fontStyle}`;
+  });
+  expect(await style(frName)).toBe(await style(nlName));
+  expect((await frName.boundingBox()).x).toBeLessThan((await nlName.boundingBox()).x);
+
   await expect(card).toContainText('Monument · protected since 2003');
-  await expect(card).toContainText(BRUSSELS.address);
-  await expect(card).toContainText(BRUSSELS.place);
   const link = card.getByRole('link', { name: 'Protection decree (PDF)' });
   await expect(link).toHaveAttribute('href', BRUSSELS.url);
   await expect(link).toHaveAttribute('target', '_blank');
