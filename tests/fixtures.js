@@ -74,6 +74,24 @@ export const BRUSSELS = {
   type: 'Monument', address: 'Rue du Lac 6 / Meerstraat 6', place: '1050 Ixelles / 1050 Elsene',
   status: 'protected', since: '2003-10-23', reference: '2071-0119', country: 'BE',
   url: 'https://doc.patrimoine.brussels/REGISTRE/AG/035_022.pdf',
+  wikipedia: {
+    fr: 'Atelier du maître-verrier Sterner',
+    nl: 'Atelier van meester-glazenier Sterner',
+    en: "Sterner's Studio",
+  },
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
+
+/**
+ * A rijksmonument with a Dutch Wikipedia article (found through Wikidata),
+ * moved onto the device position.
+ */
+export const WITTE_HUIS = {
+  kind: 'monument', source: 'rce',
+  id: '56779.00', number: 334003, name: 'Witte Huis', type: 'Handel en kantoor',
+  address: 'Geldersekade 1', place: 'Rotterdam',
+  url: 'https://monumentenregister.cultureelerfgoed.nl/monumenten/334003',
+  wikipedia: { nl: 'Witte Huis (Rotterdam)', en: 'Witte Huis' },
   latitude: DEVICE.latitude, longitude: DEVICE.longitude,
 };
 
