@@ -38,3 +38,22 @@ test('Close on a directly opened panel returns to the map', async ({ page }) => 
   await expect(panelHeading(page, 'About')).toBeHidden();
   await expect(page).toHaveTitle('SEFKHET-ABWY Map');
 });
+
+test('Legal credits every data source with its licence', async ({ page }) => {
+  await page.goto('/legal');
+  await expect(page.getByRole('heading', { level: 1, name: 'Legal' })).toBeVisible();
+  const legal = page.locator('body');
+  for (const [publisher, licence] of [
+    ['OpenStreetMap contributors', 'Open Database License'],
+    ['Rijksdienst voor het Cultureel Erfgoed', 'CC BY 4.0'],
+    ['Wikidata', 'CC0'],
+    ['urban.brussels', 'CC BY 4.0'],
+    ['Onroerend Erfgoed', 'Free Open Data Licence Flanders v1.2'],
+  ]) {
+    await expect(legal.getByRole('link', { name: publisher }).first()).toBeVisible();
+    await expect(legal).toContainText(licence);
+  }
+  // Rights holders and corrections have an address to write to.
+  await expect(legal).toContainText('No descriptions or photos are copied');
+  await expect(legal.getByRole('link', { name: 'hello@sefkhet-abwy.dev' })).toBeVisible();
+});

@@ -77,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-29 tests.
+30 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -100,6 +100,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | `panels.spec.js` | `/about`, `/legal` and `/contact` open directly (3 tests) | Every panel has a working address |
 | | The menu opens a panel and Back closes it | Menu navigation and browser history |
 | | Close on a directly opened panel returns to the map | Closing works without history |
+| | Legal credits every data source with its licence | Each source's publisher and licence, the no-copying statement and the contact address are in Legal |
 | `platform.spec.js` | Pages carry a CSP that the app runs under without violations | The policy is present and does not block the app |
 | | `/api/health` answers UP | The server functions run |
 | | `/api/geo` without location headers | No position is invented. *Skipped on Vercel* (§6) |

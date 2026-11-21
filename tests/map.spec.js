@@ -108,6 +108,7 @@ test('clicking a monument opens its card with a link to the register', async ({ 
   const link = card.getByRole('link', { name: `Rijksmonument ${monument.number}` });
   await expect(link).toHaveAttribute('href', monument.url);
   await expect(link).toHaveAttribute('target', '_blank');
+  await expect(card).toContainText('Source: Rijksdienst voor het Cultureel Erfgoed (CC BY 4.0)');
 
   await page.keyboard.press('Escape');
   await expect(card).toBeHidden();
@@ -131,6 +132,7 @@ test('clicking a public artwork opens its card with artist, year and a Wikidata 
   const link = card.getByRole('link', { name: `Wikidata ${ARTWORK.id}` });
   await expect(link).toHaveAttribute('href', ARTWORK.url);
   await expect(link).toHaveAttribute('target', '_blank');
+  await expect(card).toContainText('Source: Wikidata (CC0)');
 });
 
 /** Opens the card of the single stubbed place at the map centre. */
@@ -172,6 +174,7 @@ test('clicking a Brussels monument shows French and Dutch side by side and equal
   const link = card.getByRole('link', { name: 'Protection decree (PDF)' });
   await expect(link).toHaveAttribute('href', BRUSSELS.url);
   await expect(link).toHaveAttribute('target', '_blank');
+  await expect(card).toContainText('Source: urban.brussels (CC BY 4.0)');
 });
 
 test('clicking an Antwerp monument opens its card with a link to the Flemish inventory', async ({ page, stubNetwork }) => {
@@ -180,6 +183,7 @@ test('clicking an Antwerp monument opens its card with a link to the Flemish inv
   await expect(card).toContainText(`${ANTWERP.address}`);
   const link = card.getByRole('link', { name: `Onroerend Erfgoed ${ANTWERP.reference}` });
   await expect(link).toHaveAttribute('href', ANTWERP.url);
+  await expect(card).toContainText('Source: Onroerend Erfgoed (Free Open Data Licence Flanders)');
 });
 
 /** The device fix (accuracy 20 m) opens at zoom 17; four steps out is zoom 13, below street level. */
