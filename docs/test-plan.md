@@ -105,7 +105,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | On a touch screen, a tap opens the card and no label appears | Hover is for mice only |
 | `filter.spec.js` | Shows every kind by default, without a filter in the requests | Both kinds on at first |
 | | Hiding public art asks for monuments only, and closes an open artwork card | The filter reaches the API; no card of a hidden kind stays open |
-| | The last kind shown stays on; showing both again drops the filter | The map is never empty by filter |
+| | Everything can be turned off: no requests, an empty map and a hint | Deselecting all is allowed and costs no lookups |
 | | The count circles follow the filter | Counts and markers show the same kinds |
 | `panels.spec.js` | `/about`, `/legal` and `/contact` open directly (3 tests) | Every panel has a working address |
 | | The menu opens a panel and Back closes it | Menu navigation and browser history |
