@@ -15,7 +15,7 @@ running copy.
 **In scope**
 
 - The map: device and IP position, monuments and public artworks near the map
-  centre, counts when zoomed out, the cards for Dutch, Brussels and Flemish
+  centre, counts when zoomed out, the cards for Dutch, Brussels, Flemish and Walloon
   monuments and for artworks, map controls.
 - The panels: About, Legal and Contact, by menu and by direct address.
 - The server functions: `/api/health`, `/api/geo`, `/api/places` (through the
@@ -77,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-46 tests.
+47 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -93,6 +93,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Clicking a Brussels monument shows French and Dutch side by side and equal, with the decree | Bilingual Brussels: both names and addresses in full, the same style, French on the left; protection and decree link |
 | | A monument with a Wikipedia article links to it, in Dutch | The Wikipedia link (found through Wikidata) and its address; none where no article is known; Brussels shows French and Dutch side by side |
 | | Clicking a Flemish monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
+| | A Walloon monument shows its description, municipality and official record, Wikipedia in French | The Walloon card: no address, the municipality, the record link, French article first |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |
