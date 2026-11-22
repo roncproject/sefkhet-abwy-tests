@@ -145,6 +145,20 @@ export const WALLONIA = {
 };
 
 /**
+ * Protected heritage in Luxembourg, from Wikidata (CC0), as /api/places
+ * returns it: no address, the municipality, the protection in the official
+ * terms, linked to its Wikidata item.
+ */
+export const LUXEMBOURG = {
+  kind: 'monument', source: 'wikidata-lu',
+  id: 'Q2970684', number: null, name: 'Château de Septfontaines', names: null,
+  type: 'Patrimoine culturel national', address: null, place: 'Luxembourg',
+  status: 'protected', since: '2011-11-18', reference: 'Q2970684', country: 'LU',
+  url: 'https://www.wikidata.org/wiki/Q2970684',
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
+
+/**
  * What /api/monument-counts answers: one cell at the device position, so it
  * sits at the map centre, and one a little to the north-east.
  */

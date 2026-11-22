@@ -8,7 +8,7 @@
  * catch swapped latitude and longitude. The first stubbed monument sits at the
  * device position, which is the centre of the map, so a click there hits it.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP, WALLONIA, WITTE_HUIS, POEM } from './fixtures.js';
+import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP, WALLONIA, LUXEMBOURG, WITTE_HUIS, POEM } from './fixtures.js';
 
 async function mapCentre(page) {
   const box = await page.getByRole('application', { name: 'Map centred on your location' }).boundingBox();
@@ -212,6 +212,16 @@ test('a Walloon monument shows its description, municipality and official record
   await expect(record).toHaveAttribute('href', WALLONIA.url);
   await expect(card.getByRole('link', { name: /^Wikipedia/ })).toHaveText('Wikipedia FR ↗');
   await expect(card).toContainText('Source: SPW – Agence wallonne du Patrimoine (CC BY 4.0)');
+});
+
+test('a Luxembourg monument shows its protection and links to Wikidata', async ({ page, stubNetwork }) => {
+  const card = await openCard(page, stubNetwork, LUXEMBOURG, `Monument: ${LUXEMBOURG.name}`);
+  await expect(card.getByRole('heading')).toHaveText(LUXEMBOURG.name);
+  await expect(card).toContainText(LUXEMBOURG.place);
+  await expect(card).toContainText('Patrimoine culturel national · protected since 2011');
+  const link = card.getByRole('link', { name: `Wikidata ${LUXEMBOURG.reference}` });
+  await expect(link).toHaveAttribute('href', LUXEMBOURG.url);
+  await expect(card).toContainText('Source: Wikidata (CC0)');
 });
 
 /** The device fix (accuracy 20 m) opens at zoom 17; four steps out is zoom 13, below street level. */
