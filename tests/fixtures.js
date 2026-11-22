@@ -129,6 +129,22 @@ export const ANTWERP = {
 };
 
 /**
+ * Classified heritage in Wallonia (SPW, Agence wallonne du Patrimoine,
+ * CC-BY 4.0), as /api/places returns it: no address, the official
+ * description as its name, the municipality from its code. With articles in
+ * Dutch and French, so the card can show French first.
+ */
+export const WALLONIA = {
+  kind: 'monument', source: 'wallonia',
+  id: '62003-CLT-0009-01', number: null, name: 'Fort de Loncin,rue des Héros, 17', names: null,
+  type: 'Monument classé', address: null, place: 'Ans',
+  status: 'protected', since: '2004-06-11', reference: '62003-CLT-0009-01', country: 'BE',
+  url: 'https://territoire.wallonie.be/fr/liendoc/BC_PAT/62003-CLT-0009-01',
+  wikipedia: { nl: 'Fort van Loncin', fr: 'Fort de Loncin' },
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
+
+/**
  * What /api/monument-counts answers: one cell at the device position, so it
  * sits at the map centre, and one a little to the north-east.
  */

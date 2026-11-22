@@ -49,6 +49,7 @@ test('Legal credits every data source with its licence', async ({ page }) => {
     ['Wikidata', 'CC0'],
     ['urban.brussels', 'CC BY 4.0'],
     ['Onroerend Erfgoed', 'Free Open Data Licence Flanders v1.2'],
+    ['Agence wallonne du Patrimoine', 'Patrimoine – Biens classés'],
     ['Wikimedia Commons', 'Only the facts are used'],
   ]) {
     await expect(legal.getByRole('link', { name: publisher }).first()).toBeVisible();
