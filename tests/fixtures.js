@@ -148,9 +148,10 @@ export const test = base.extend({
    * `tooMany: true` makes /api/places answer that the visible area holds more
    * places than it shows, as in a dense city centre.
    * `cells` is the /api/monument-counts answer (default: CELLS).
-   * Returns `placesRequests`, the parsed centre (lat/lon) and visible box of
-   * every /api/places call, and `countsRequests`, the parsed box and zoom of
-   * every count request.
+   * Like the server, /api/places keeps only the kinds in `kinds=` when given.
+   * Returns `placesRequests`, the parsed centre (lat/lon), visible box and
+   * kinds (null for all) of every /api/places call, and `countsRequests`, the
+   * parsed box, zoom and kinds of every count request.
    */
   stubNetwork: async ({ context }, use) => {
     await use(async ({ geo = { available: false, source: 'ip' }, places = PLACES, cells = CELLS, tooMany = false } = {}) => {
@@ -168,8 +169,11 @@ export const test = base.extend({
         placesRequests.push({
           lat: read('lat'), lon: read('lon'),
           west: read('west'), south: read('south'), east: read('east'), north: read('north'),
+          kinds: url.searchParams.get('kinds'),
         });
-        return route.fulfill({ json: tooMany ? { places: [], tooMany: true } : { places } });
+        const kinds = url.searchParams.get('kinds')?.split(',');
+        const shown = kinds ? places.filter((p) => kinds.includes(p.kind)) : places;
+        return route.fulfill({ json: tooMany ? { places: [], tooMany: true } : { places: shown } });
       });
 
       await context.route('**/api/monument-counts?*', (route) => {
@@ -177,6 +181,7 @@ export const test = base.extend({
         const read = (k) => Number(url.searchParams.get(k));
         countsRequests.push({
           west: read('west'), south: read('south'), east: read('east'), north: read('north'), zoom: read('zoom'),
+          kinds: url.searchParams.get('kinds'),
         });
         return route.fulfill({ json: { cells } });
       });

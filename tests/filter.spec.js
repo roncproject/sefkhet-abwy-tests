@@ -1,0 +1,81 @@
+/**
+ * The filter by kind (issue #21): two buttons at the top right of the map,
+ * "Monuments" and "Public art", which also serve as the legend. Each asks the
+ * API for its kinds only; the count circles follow the filter too; at least
+ * one kind stays on.
+ */
+import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK } from './fixtures.js';
+
+test.use({ permissions: ['geolocation'], geolocation: DEVICE });
+
+const filter = (page) => page.getByRole('group', { name: 'Show on the map' });
+const kindButton = (page, name) => filter(page).getByRole('button', { name });
+
+async function mapCentre(page) {
+  const box = await page.getByRole('application', { name: /^Map centred on your location/ }).boundingBox();
+  return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+}
+
+test('shows every kind by default, without a filter in the requests', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork({ places: [ARTWORK, PLACES[1]] });
+  await page.goto('/');
+  await waitForMap(page);
+
+  await expect(kindButton(page, 'Monuments')).toHaveAttribute('aria-pressed', 'true');
+  await expect(kindButton(page, 'Public art')).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  expect(placesRequests.every((r) => r.kinds === null)).toBe(true);
+});
+
+test('hiding public art asks for monuments only, and closes an open artwork card', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork({ places: [ARTWORK, PLACES[1]] });
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+
+  const { x, y } = await mapCentre(page);
+  const card = page.getByRole('region', { name: `Artwork: ${ARTWORK.name}` });
+  await expect(async () => {
+    await page.mouse.click(x, y);
+    await expect(card).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
+
+  await kindButton(page, 'Public art').click();
+  await expect(kindButton(page, 'Public art')).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => placesRequests.at(-1)?.kinds).toBe('monument');
+  await expect(card).toBeHidden();
+
+  // The artwork's marker is gone: a tap on its place opens nothing.
+  await page.waitForTimeout(500);
+  await page.mouse.click(x, y);
+  await page.waitForTimeout(500);
+  await expect(card).toBeHidden();
+});
+
+test('the last kind shown stays on; showing both again drops the filter', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork();
+  await page.goto('/');
+  await waitForMap(page);
+
+  await kindButton(page, 'Monuments').click();
+  await expect.poll(() => placesRequests.at(-1)?.kinds).toBe('artwork');
+
+  // Public art is the only kind left: it cannot be turned off.
+  await kindButton(page, 'Public art').click();
+  await expect(kindButton(page, 'Public art')).toHaveAttribute('aria-pressed', 'true');
+
+  await kindButton(page, 'Monuments').click();
+  await expect(kindButton(page, 'Monuments')).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => placesRequests.at(-1)?.kinds).toBe(null);
+});
+
+test('the count circles follow the filter', async ({ page, stubNetwork }) => {
+  const { countsRequests } = await stubNetwork({ tooMany: true });
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => countsRequests.length).toBeGreaterThan(0);
+  expect(countsRequests.at(-1).kinds).toBe(null);
+
+  await kindButton(page, 'Monuments').click();
+  await expect.poll(() => countsRequests.at(-1)?.kinds).toBe('artwork');
+});
