@@ -194,7 +194,7 @@ test('a monument with a Wikipedia article links to it, in Dutch', async ({ page,
   await expect(card.getByRole('link', { name: `Rijksmonument ${WITTE_HUIS.number}` })).toBeVisible();
 });
 
-test('clicking an Antwerp monument opens its card with a link to the Flemish inventory', async ({ page, stubNetwork }) => {
+test('clicking a Flemish monument opens its card with a link to the Flemish inventory', async ({ page, stubNetwork }) => {
   const card = await openCard(page, stubNetwork, ANTWERP, `Monument: ${ANTWERP.name}`);
   await expect(card).toContainText('Monument · protected since 1978');
   await expect(card).toContainText(`${ANTWERP.address}`);
