@@ -57,6 +57,30 @@ export const ARTWORK = {
 };
 
 /**
+ * A mural as /api/places returns it (Wikidata, CC0): Melly Shum Hates Her Job
+ * by Ken Lum, at the device position. Its group is `mural`.
+ */
+export const MURAL = {
+  kind: 'artwork', source: 'wikidata',
+  id: 'Q20888382', name: 'Melly Shum Hates Her Job', artists: 'Ken Lum', year: 1990, type: 'kunstwerk',
+  url: 'https://www.wikidata.org/wiki/Q20888382', art: ['mural'],
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
+
+/**
+ * A wall poem found through Wikimedia Commons, as /api/places returns it:
+ * no title, so the card calls it after its poet; the position is taken from
+ * the street, so it is approximate. At the device position.
+ */
+export const POEM = {
+  kind: 'artwork', source: 'commons',
+  id: 'maastunnel-jan-prins', name: null, artists: 'Jan Prins', year: null, type: 'muurgedicht',
+  address: 'Maastunnel, toegangsgebouw Zuid', art: ['poetry'], approximate: true,
+  url: 'https://commons.wikimedia.org/wiki/File:Gedicht_van_Jan_Prins_in_het_toegangsgebouw_Zuid_van_de_Maastunnel_(01).jpg',
+  latitude: DEVICE.latitude, longitude: DEVICE.longitude,
+};
+
+/**
  * Protected heritage in Brussels (urban.brussels, CC-BY 4.0) and Antwerp
  * (Onroerend Erfgoed, Free Open Data Licence Flanders) as /api/places returns
  * it, moved onto the device position. Real objects; the facts are unchanged.
@@ -148,7 +172,8 @@ export const test = base.extend({
    * `tooMany: true` makes /api/places answer that the visible area holds more
    * places than it shows, as in a dense city centre.
    * `cells` is the /api/monument-counts answer (default: CELLS).
-   * Like the server, /api/places keeps only the kinds in `kinds=` when given.
+   * Like the server, /api/places keeps only the kinds in `kinds=` and the
+   * groups of public art in `art=` when given.
    * Returns `placesRequests`, the parsed centre (lat/lon), visible box and
    * kinds (null for all) of every /api/places call, and `countsRequests`, the
    * parsed box, zoom and kinds of every count request.
@@ -169,10 +194,12 @@ export const test = base.extend({
         placesRequests.push({
           lat: read('lat'), lon: read('lon'),
           west: read('west'), south: read('south'), east: read('east'), north: read('north'),
-          kinds: url.searchParams.get('kinds'),
+          kinds: url.searchParams.get('kinds'), art: url.searchParams.get('art'),
         });
         const kinds = url.searchParams.get('kinds')?.split(',');
-        const shown = kinds ? places.filter((p) => kinds.includes(p.kind)) : places;
+        const art = url.searchParams.get('art')?.split(',');
+        const shown = places.filter((p) => (!kinds || kinds.includes(p.kind))
+          && (!art || p.kind !== 'artwork' || (p.art ?? ['other']).some((t) => art.includes(t))));
         return route.fulfill({ json: tooMany ? { places: [], tooMany: true } : { places: shown } });
       });
 
@@ -181,7 +208,7 @@ export const test = base.extend({
         const read = (k) => Number(url.searchParams.get(k));
         countsRequests.push({
           west: read('west'), south: read('south'), east: read('east'), north: read('north'), zoom: read('zoom'),
-          kinds: url.searchParams.get('kinds'),
+          kinds: url.searchParams.get('kinds'), art: url.searchParams.get('art'),
         });
         return route.fulfill({ json: { cells } });
       });

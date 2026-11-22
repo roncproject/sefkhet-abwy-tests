@@ -8,7 +8,7 @@
  * catch swapped latitude and longitude. The first stubbed monument sits at the
  * device position, which is the centre of the map, so a click there hits it.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP, WITTE_HUIS } from './fixtures.js';
+import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP, WITTE_HUIS, POEM } from './fixtures.js';
 
 async function mapCentre(page) {
   const box = await page.getByRole('application', { name: 'Map centred on your location' }).boundingBox();
@@ -306,4 +306,15 @@ test('"Centre on my location" returns to the device position after panning', asy
   await expect.poll(() => placesRequests.length).toBeGreaterThan(before);
   await expect.poll(() => placesRequests.at(-1).lon).toBeCloseTo(DEVICE.longitude, 4);
   expect(placesRequests.at(-1).lat).toBeCloseTo(DEVICE.latitude, 4);
+});
+
+test('a wall poem from Wikimedia Commons: named after its poet, approximate, linked to the photo', async ({ page, stubNetwork }) => {
+  const card = await openCard(page, stubNetwork, POEM, 'Artwork: Wall poem by Jan Prins');
+  await expect(card.getByRole('heading')).toHaveText('Wall poem by Jan Prins');
+  await expect(card).toContainText(POEM.address);
+  await expect(card).toContainText('Wall poem · muurgedicht');
+  await expect(card).toContainText('Position approximate');
+  const link = card.getByRole('link', { name: 'Wikimedia Commons' });
+  await expect(link).toHaveAttribute('href', POEM.url);
+  await expect(card).toContainText('Source: Wikimedia Commons (facts only)');
 });

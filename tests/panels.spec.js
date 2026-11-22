@@ -49,11 +49,12 @@ test('Legal credits every data source with its licence', async ({ page }) => {
     ['Wikidata', 'CC0'],
     ['urban.brussels', 'CC BY 4.0'],
     ['Onroerend Erfgoed', 'Free Open Data Licence Flanders v1.2'],
+    ['Wikimedia Commons', 'Only the facts are used'],
   ]) {
     await expect(legal.getByRole('link', { name: publisher }).first()).toBeVisible();
     await expect(legal).toContainText(licence);
   }
   // Rights holders and corrections have an address to write to.
-  await expect(legal).toContainText('No descriptions or photos are copied');
+  await expect(legal).toContainText('No descriptions, poems or photos are copied');
   await expect(legal.getByRole('link', { name: 'hello@sefkhet-abwy.dev' })).toBeVisible();
 });
