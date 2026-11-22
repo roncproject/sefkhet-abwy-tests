@@ -15,7 +15,7 @@ running copy.
 **In scope**
 
 - The map: device and IP position, monuments and public artworks near the map
-  centre, counts when zoomed out, the cards for Dutch, Brussels and Antwerp
+  centre, counts when zoomed out, the cards for Dutch, Brussels and Flemish
   monuments and for artworks, map controls.
 - The panels: About, Legal and Contact, by menu and by direct address.
 - The server functions: `/api/health`, `/api/geo`, `/api/places` (through the
@@ -77,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-45 tests.
+46 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -92,7 +92,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Clicking a public artwork opens its card with artist, year and a Wikidata link | The artwork card and its source link |
 | | Clicking a Brussels monument shows French and Dutch side by side and equal, with the decree | Bilingual Brussels: both names and addresses in full, the same style, French on the left; protection and decree link |
 | | A monument with a Wikipedia article links to it, in Dutch | The Wikipedia link (found through Wikidata) and its address; none where no article is known; Brussels shows French and Dutch side by side |
-| | Clicking an Antwerp monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
+| | Clicking a Flemish monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |
@@ -104,6 +104,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | A Brussels label shows the French and Dutch name, equal | Bilingual labels: both names, the same size and weight |
 | | An artwork label shows its artist and year | The label's second line per kind |
 | | A mural's label names its kind of art | The group of public art on the label |
+| | A Flemish label names the municipality | The place from the source, not a fixed city |
 | | On a touch screen, a tap opens the card and no label appears | Hover is for mice only |
 | `filter.spec.js` | Shows every kind by default, without a filter in the requests | Both kinds on at first |
 | | Hiding public art asks for monuments only, and closes an open artwork card | The filter reaches the API; no card of a hidden kind stays open |
