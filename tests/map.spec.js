@@ -221,6 +221,7 @@ test('a Luxembourg monument shows Luxembourgish and French side by side, its pro
   await expect(card.locator('[lang="lb"]')).toContainText(lb.place);
   await expect(card.locator('[lang="fr"]')).toContainText(fr.place);
   await expect(card).toContainText('Patrimoine culturel national · protected since 2011');
+  await expect(card.getByRole('link', { name: /^Wikipedia/ })).toHaveText(['Wikipedia LB ↗', 'Wikipedia FR ↗']);
   const link = card.getByRole('link', { name: `Wikidata ${LUXEMBOURG.reference}` });
   await expect(link).toHaveAttribute('href', LUXEMBOURG.url);
   await expect(card).toContainText('Source: Wikidata (CC0)');

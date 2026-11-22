@@ -160,6 +160,8 @@ export const LUXEMBOURG = {
   type: 'Patrimoine culturel national', address: null, place: 'Lëtzebuerg / Luxembourg',
   status: 'protected', since: '2011-11-18', reference: 'Q13103031', country: 'LU',
   url: 'https://www.wikidata.org/wiki/Q13103031',
+  // Articles in more languages than the card shows: Luxembourgish and French, not Dutch.
+  wikipedia: { lb: 'Hinzerter Kräiz', fr: 'Croix de Hinzert', nl: 'Hinzerter Kreuz' },
   latitude: DEVICE.latitude, longitude: DEVICE.longitude,
 };
 
