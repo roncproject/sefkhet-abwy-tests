@@ -5,7 +5,7 @@
  * The label is an HTML element over the map (the markers themselves are in a
  * WebGL canvas), marked aria-hidden as a visual aid, so it is found by class.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, BRUSSELS, ARTWORK } from './fixtures.js';
+import { test, expect, waitForMap, DEVICE, PLACES, BRUSSELS, ARTWORK, MURAL } from './fixtures.js';
 
 test.use({ permissions: ['geolocation'], geolocation: DEVICE });
 
@@ -109,4 +109,16 @@ test.describe('on a touch screen', () => {
     await page.waitForTimeout(500);
     await expect(page.locator('.map-label')).toHaveCount(0);
   });
+});
+
+test('a mural\'s label names its kind of art', async ({ page, stubNetwork }) => {
+  const { x, y } = await openMap(page, stubNetwork, [MURAL]);
+  const label = page.locator('.map-label');
+  await expect(async () => {
+    await page.mouse.move(x + 60, y + 60);
+    await page.mouse.move(x, y);
+    await expect(label).toBeVisible({ timeout: 1_500 });
+  }).toPass({ timeout: 15_000 });
+  await expect(label).toContainText(MURAL.name);
+  await expect(label).toContainText(`Mural · ${MURAL.artists}, ${MURAL.year}`);
 });

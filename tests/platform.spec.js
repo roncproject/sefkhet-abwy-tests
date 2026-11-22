@@ -83,7 +83,7 @@ test('/api/places refuses an incomplete or oversized box without a lookup', asyn
   expect(await tooLarge.json()).toEqual({ error: 'the box is too large; zoom in' });
 });
 
-test('/api/places and /api/monument-counts refuse an unknown kind without a lookup', async ({ request }) => {
+test('/api/places and /api/monument-counts refuse an unknown kind or kind of art without a lookup', async ({ request }) => {
   const box = 'west=4.47&south=51.90&east=4.49&north=51.91';
   const expected = { error: 'kinds must be one or more of monument, artwork' };
   const places = await request.get(`/api/places?${box}&lat=51.905&lon=4.48&kinds=castle`);
@@ -92,6 +92,9 @@ test('/api/places and /api/monument-counts refuse an unknown kind without a look
   const counts = await request.get(`/api/monument-counts?${box}&zoom=13&kinds=`);
   expect(counts.status()).toBe(400);
   expect(await counts.json()).toEqual(expected);
+  const art = await request.get(`/api/places?${box}&lat=51.905&lon=4.48&art=graffiti`);
+  expect(art.status()).toBe(400);
+  expect(await art.json()).toEqual({ error: 'art must be one or more of sculpture, memorial, relief, mural, poetry, other' });
 });
 
 const VERCEL_AMSTERDAM = {

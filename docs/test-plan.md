@@ -69,7 +69,7 @@ servers:
 |---|---|---|
 | Device position | The browser's geolocation | Hotel New York, Rotterdam (51.9054 N, 4.4874 E), accuracy 20 m |
 | `/api/geo` | IP position | None by default; Amsterdam in the IP-fallback test |
-| `/api/places` | Monuments and artworks near the centre, only the kinds in `kinds=` when given | Two real Rotterdam monuments, the first moved onto the device position; one real Rotterdam artwork (Wikidata), one real Brussels monument (urban.brussels) and one real Antwerp monument (Onroerend Erfgoed), and the Witte Huis in Rotterdam with its Wikipedia article, each likewise at the device position, for the card tests |
+| `/api/places` | Monuments and artworks near the centre, only the kinds in `kinds=` and groups in `art=` when given; also a mural (Melly Shum) and a wall poem found through Wikimedia Commons | Two real Rotterdam monuments, the first moved onto the device position; one real Rotterdam artwork (Wikidata), one real Brussels monument (urban.brussels) and one real Antwerp monument (Onroerend Erfgoed), and the Witte Huis in Rotterdam with its Wikipedia article, each likewise at the device position, for the card tests |
 | `/api/monument-counts` | Counts per grid cell | Two cells; the first at the device position |
 | OpenStreetMap tiles | Map tiles | A one-pixel PNG |
 
@@ -77,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-41 tests.
+45 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -98,15 +98,19 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |
 | | Zoom in and zoom out move the map | The controls work and each change reloads monuments |
 | | "Centre on my location" returns after panning | The re-centre control |
+| | A wall poem from Wikimedia Commons: named after its poet, approximate, linked to the photo | The card of a work without a title, an approximate position and the Commons credit |
 | `hover.spec.js` | Resting the mouse on a monument shows its name; moving off hides it | The label appears after a short rest and hides on leaving |
 | | With a card open, other markers still get a label, the open one does not | Exploring continues while a card is open |
 | | A Brussels label shows the French and Dutch name, equal | Bilingual labels: both names, the same size and weight |
 | | An artwork label shows its artist and year | The label's second line per kind |
+| | A mural's label names its kind of art | The group of public art on the label |
 | | On a touch screen, a tap opens the card and no label appears | Hover is for mice only |
 | `filter.spec.js` | Shows every kind by default, without a filter in the requests | Both kinds on at first |
 | | Hiding public art asks for monuments only, and closes an open artwork card | The filter reaches the API; no card of a hidden kind stays open |
 | | Everything can be turned off: no requests, an empty map and a hint | Deselecting all is allowed and costs no lookups |
 | | The count circles follow the filter | Counts and markers show the same kinds |
+| | The kinds of public art open under Public art and filter on their own | The six groups, `art=`, and Public art half on, all on and all off |
+| | An open card closes when its kind of art is hidden | No card of a hidden group stays open |
 | `panels.spec.js` | `/about`, `/legal` and `/contact` open directly (3 tests) | Every panel has a working address |
 | | The menu opens a panel and Back closes it | Menu navigation and browser history |
 | | Close on a directly opened panel returns to the map | Closing works without history |
@@ -116,7 +120,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | `/api/geo` without location headers | No position is invented. *Skipped on Vercel* (§6) |
 | | `/api/monument-counts` refuses a missing or oversized box | Input checks run before any database lookup |
 | | `/api/places` refuses an incomplete or oversized box | Input checks run before any database lookup |
-| | `/api/places` and `/api/monument-counts` refuse an unknown kind | The filter is checked before any lookup |
+| | `/api/places` and `/api/monument-counts` refuse an unknown kind or kind of art | The filter is checked before any lookup |
 | | `/api/geo` uses the Vercel headers when reached directly | Header parsing. *Skipped on Vercel* (§6) |
 | | `/api/geo` prefers the Cloudflare headers behind the proxy | Behind Cloudflare, the visitor's own position wins |
 | | Serves the manifest and registers the service worker | The app is installable |
