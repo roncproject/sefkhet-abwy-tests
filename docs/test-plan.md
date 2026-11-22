@@ -94,7 +94,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | A monument with a Wikipedia article links to it, in Dutch | The Wikipedia link (found through Wikidata) and its address; none where no article is known; Brussels shows French and Dutch side by side |
 | | Clicking a Flemish monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
 | | A Walloon monument shows its description, municipality and official record, Wikipedia in French | The Walloon card: no address, the municipality, the record link, French article first |
-| | A Luxembourg monument shows its protection and links to Wikidata | The Luxembourg card: municipality, official protection term, Wikidata link and credit |
+| | A Luxembourg monument shows Luxembourgish and French side by side, its protection and Wikidata | The Luxembourg card: both languages, Luxembourgish first, the official protection term, Wikidata link and credit |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |

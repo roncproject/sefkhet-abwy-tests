@@ -146,15 +146,20 @@ export const WALLONIA = {
 
 /**
  * Protected heritage in Luxembourg, from Wikidata (CC0), as /api/places
- * returns it: no address, the municipality, the protection in the official
- * terms, linked to its Wikidata item.
+ * returns it: Luxembourgish and French side by side, Luxembourgish first; no
+ * address; the protection in the official terms; linked to its Wikidata item.
  */
 export const LUXEMBOURG = {
   kind: 'monument', source: 'wikidata-lu',
-  id: 'Q2970684', number: null, name: 'Château de Septfontaines', names: null,
-  type: 'Patrimoine culturel national', address: null, place: 'Luxembourg',
-  status: 'protected', since: '2011-11-18', reference: 'Q2970684', country: 'LU',
-  url: 'https://www.wikidata.org/wiki/Q2970684',
+  id: 'Q13103031', number: null,
+  name: 'Hinzerter Kräiz / Monument national de la résistance et de la déportation',
+  names: [
+    { lang: 'lb', name: 'Hinzerter Kräiz', address: null, place: 'Lëtzebuerg' },
+    { lang: 'fr', name: 'Monument national de la résistance et de la déportation', address: null, place: 'Luxembourg' },
+  ],
+  type: 'Patrimoine culturel national', address: null, place: 'Lëtzebuerg / Luxembourg',
+  status: 'protected', since: '2011-11-18', reference: 'Q13103031', country: 'LU',
+  url: 'https://www.wikidata.org/wiki/Q13103031',
   latitude: DEVICE.latitude, longitude: DEVICE.longitude,
 };
 

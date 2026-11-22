@@ -214,10 +214,12 @@ test('a Walloon monument shows its description, municipality and official record
   await expect(card).toContainText('Source: SPW – Agence wallonne du Patrimoine (CC BY 4.0)');
 });
 
-test('a Luxembourg monument shows its protection and links to Wikidata', async ({ page, stubNetwork }) => {
+test('a Luxembourg monument shows Luxembourgish and French side by side, its protection and Wikidata', async ({ page, stubNetwork }) => {
   const card = await openCard(page, stubNetwork, LUXEMBOURG, `Monument: ${LUXEMBOURG.name}`);
-  await expect(card.getByRole('heading')).toHaveText(LUXEMBOURG.name);
-  await expect(card).toContainText(LUXEMBOURG.place);
+  const [lb, fr] = LUXEMBOURG.names;
+  await expect(card.getByRole('heading')).toHaveText([lb.name, fr.name]);
+  await expect(card.locator('[lang="lb"]')).toContainText(lb.place);
+  await expect(card.locator('[lang="fr"]')).toContainText(fr.place);
   await expect(card).toContainText('Patrimoine culturel national · protected since 2011');
   const link = card.getByRole('link', { name: `Wikidata ${LUXEMBOURG.reference}` });
   await expect(link).toHaveAttribute('href', LUXEMBOURG.url);
