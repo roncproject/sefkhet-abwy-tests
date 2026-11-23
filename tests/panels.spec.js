@@ -56,6 +56,9 @@ test('Legal credits every data source with its licence', async ({ page }) => {
     await expect(legal).toContainText(licence);
   }
   // Rights holders and corrections have an address to write to.
-  await expect(legal).toContainText('No descriptions, poems or photos are copied');
+  await expect(legal).toContainText('No other descriptions, no poems and no photos are copied');
+  // Not presented as official, as the Flemish licence asks; the boundary used for Rotterdam's art is credited.
+  await expect(legal).toContainText('It is not affiliated with, or endorsed by');
+  await expect(legal.getByRole('link', { name: 'Kadaster' })).toBeVisible();
   await expect(legal.getByRole('link', { name: 'hello@sefkhet-abwy.dev' })).toBeVisible();
 });

@@ -77,7 +77,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-48 tests.
+49 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -95,6 +95,7 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Clicking a Flemish monument opens its card with a link to the Flemish inventory | The Flemish card and its source link |
 | | A Walloon monument shows its description, municipality and official record, Wikipedia in French | The Walloon card: no address, the municipality, the record link, French article first |
 | | A Luxembourg monument shows Luxembourgish and French side by side, its protection and Wikidata | The Luxembourg card: both languages, Luxembourgish first, the official protection term, Wikidata link and credit |
+| | The map credits OpenStreetMap, linked to its copyright page | The attribution OSM's guidelines ask for, on the map itself |
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |
