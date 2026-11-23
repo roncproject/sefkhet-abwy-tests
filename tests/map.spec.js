@@ -342,3 +342,12 @@ test('a wall poem from Wikimedia Commons: named after its poet, approximate, lin
   await expect(link).toHaveAttribute('href', POEM.url);
   await expect(card).toContainText('Source: Wikimedia Commons (facts only)');
 });
+
+test('the map credits OpenStreetMap, linked to its copyright page', async ({ page, stubNetwork }) => {
+  await stubNetwork();
+  await page.goto('/');
+  await waitForMap(page);
+  const credit = page.locator('.esri-attribution');
+  await expect(credit).toContainText('© OpenStreetMap contributors');
+  await expect(credit.getByRole('link', { name: 'OpenStreetMap' })).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
+});
