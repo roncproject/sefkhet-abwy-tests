@@ -77,13 +77,18 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 
 ## 5. Test inventory
 
-49 tests.
+54 tests.
 
 | File | Test | Proves |
 |---|---|---|
 | `location.spec.js` | Opens on the device position | A granted position centres the map |
 | | Uses the IP position when location is refused | The fallback order: device, then IP |
 | | Falls back to Rotterdam when there is no position | The app still opens with no position at all |
+| `coverage.spec.js` | A map in the US says what is covered, and the button goes there | Nobody outside the Benelux is left with an unexplained empty map |
+| | The notice can be closed and stays closed in this session | The notice does not keep coming back |
+| | No notice in the covered area, for a visitor from elsewhere | It goes by the map area, not the visitor's country |
+| | No notice just across the border | A view that still shows covered area is left alone |
+| | On a phone the notice fits and leaves the filter free | The layout on a narrow screen |
 | `map.spec.js` | Asks for monuments at the map centre, latitude and longitude in order | The places request carries the right coordinates, not swapped |
 | | Recovers by reloading once when a chunk is gone after a deploy | An old copy of the app recovers instead of showing an error |
 | | Asks for the places in the visible area, not a fixed circle | The request carries the visible box around the centre |
