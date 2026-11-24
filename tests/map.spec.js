@@ -315,6 +315,27 @@ test('the mouse wheel zooms one whole level per step', async ({ page, stubNetwor
   await expect.poll(() => width() / start).toBeCloseTo(1, 1);
 });
 
+test('quick wheel steps ask for the final zoom level, not for each step', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork();
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  const width = () => { const r = placesRequests.at(-1); return r.east - r.west; };
+  const start = width();
+  const seen = placesRequests.length;
+  const { x, y } = await mapCentre(page);
+  await page.mouse.move(x, y);
+
+  // The device fix opens at zoom 17; three steps out is 14, still street level.
+  for (let i = 0; i < 3; i++) {
+    await page.mouse.wheel(0, 100);
+    await page.waitForTimeout(120);
+  }
+  await expect.poll(() => width() / start, { timeout: 10_000 }).toBeCloseTo(8, 0);
+  await page.waitForTimeout(500);
+  expect(placesRequests.length - seen).toBeLessThanOrEqual(2);
+});
+
 test('zoom in and zoom out move the map', async ({ page, stubNetwork }) => {
   const { placesRequests } = await stubNetwork();
   await page.goto('/');
