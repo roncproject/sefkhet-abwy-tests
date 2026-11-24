@@ -2,12 +2,9 @@
  * Shared test setup: stubs for everything the app fetches from the network,
  * so the tests are fast, repeatable and never load OpenStreetMap's servers.
  *
- * The ArcGIS SDK's own assets (js.arcgis.com) are not stubbed; they are
- * versioned static files and the map cannot start without them.
- *
  * Protected deployments: when VERCEL_BYPASS is set, the Vercel protection
  * bypass header is added to requests for the app's own address only, so
- * the value never reaches third parties such as Esri.
+ * the value never reaches third parties such as the tile server.
  */
 import { test as base, expect } from '@playwright/test';
 

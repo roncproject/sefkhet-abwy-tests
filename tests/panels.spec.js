@@ -60,5 +60,8 @@ test('Legal credits every data source with its licence', async ({ page }) => {
   // Not presented as official, as the Flemish licence asks; the boundary used for Rotterdam's art is credited.
   await expect(legal).toContainText('It is not affiliated with, or endorsed by');
   await expect(legal.getByRole('link', { name: 'Kadaster' })).toBeVisible();
+  // The map software and the list of licences.
+  await expect(legal.getByRole('link', { name: 'MapLibre GL JS' })).toBeVisible();
+  await expect(legal.getByRole('link', { name: 'this list' })).toHaveAttribute('href', '/licenses/third-party.txt');
   await expect(legal.getByRole('link', { name: 'hello@sefkhet-abwy.dev' })).toBeVisible();
 });

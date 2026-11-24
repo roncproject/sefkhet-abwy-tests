@@ -73,11 +73,9 @@ servers:
 | `/api/monument-counts` | Counts per grid cell | Two cells; the first at the device position |
 | OpenStreetMap tiles | Map tiles | A one-pixel PNG |
 
-The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
-
 ## 5. Test inventory
 
-54 tests.
+57 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -125,6 +123,9 @@ The ArcGIS SDK's own files are not stubbed; the map cannot start without them.
 | | Close on a directly opened panel returns to the map | Closing works without history |
 | | Legal credits every data source with its licence | Each source's publisher and licence, the no-copying statement and the contact address are in Legal |
 | `platform.spec.js` | Pages carry a CSP that the app runs under without violations | The policy is present and does not block the app |
+| | The map loads from the app and the tile server only | No other party receives requests |
+| | The licences of the software used are published | The BSD and MIT notices are met |
+| | Once installed, the app and its map open without a connection | The offline promise of the PWA |
 | | `/api/health` answers UP | The server functions run |
 | | `/api/geo` without location headers | No position is invented. *Skipped on Vercel* (§6) |
 | | `/api/monument-counts` refuses a missing or oversized box | Input checks run before any database lookup |

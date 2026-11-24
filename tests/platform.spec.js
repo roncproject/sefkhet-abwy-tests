@@ -28,10 +28,28 @@ test('pages carry a Content-Security-Policy that the app runs under without viol
   }).toPass({ timeout: 30_000 });
   await page.waitForTimeout(1_000);
 
-  // The ArcGIS SDK tries Function() once to find out whether eval is allowed,
-  // and adapts when it is not. That probe is expected; nothing else is.
   const violations = await page.evaluate(() => window.__violations);
-  expect(violations.filter((v) => v !== 'script-src eval')).toEqual([]);
+  expect(violations).toEqual([]);
+});
+
+test('the map loads from the app and the tile server only', async ({ page, baseURL, stubNetwork }) => {
+  const { countsRequests } = await stubNetwork();
+  const hosts = new Set();
+  page.on('request', (r) => { if (/^https?:/.test(r.url())) hosts.add(new URL(r.url()).host); });
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => countsRequests.length).toBeGreaterThan(0);
+  await expect.poll(() => hosts.has('tile.openstreetmap.org')).toBe(true);
+  expect([...hosts].sort()).toEqual([new URL(baseURL).host, 'tile.openstreetmap.org'].sort());
+});
+
+test('the licences of the software used are published', async ({ request }) => {
+  const res = await request.get('/licenses/third-party.txt');
+  expect(res.ok()).toBe(true);
+  expect(res.headers()['content-type']).toContain('text/plain');
+  const text = await res.text();
+  expect(text).toContain('maplibre-gl@');
+  expect(text).toContain('Licence: BSD-3-Clause');
 });
 
 test('/api/health answers UP', async ({ request }) => {
@@ -144,5 +162,19 @@ test.describe('installable app', () => {
     await page.goto('/');
     const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
     expect(scope).toBe(new URL('/', page.url()).href);
+  });
+
+  test('once installed, the app and its map open without a connection', async ({ page, context, stubNetwork }) => {
+    await stubNetwork();
+    await page.goto('/');
+    await waitForMap(page);
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller), { timeout: 15_000 }).toBe(true);
+
+    await context.setOffline(true);
+    await page.reload();
+    await waitForMap(page);
+    await expect(page.locator('.maplibregl-canvas')).toBeVisible();
+    await context.setOffline(false);
   });
 });

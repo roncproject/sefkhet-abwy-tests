@@ -23,9 +23,9 @@ is refused.
 | `tests/hover.spec.js` | With a mouse, resting on a monument shows its name and moving off hides it · with a card open, other markers still get a label · a Brussels label shows the French and Dutch name, equal · an artwork label shows its artist and year · a mural's label names its kind of art · a Flemish label names the municipality · on a touch screen a tap opens the card and no label appears |
 | `tests/filter.spec.js` | Every kind shown by default · hiding public art asks for monuments only and closes an artwork card · everything can be turned off, leaving an empty map and no requests · the count circles follow the filter · the kinds of public art open under Public art and filter on their own · an open card closes when its kind of art is hidden |
 | `tests/panels.spec.js` | `/about`, `/legal` and `/contact` open directly · the menu opens a panel and Back closes it · Close on a directly opened panel returns to the map · Legal credits every data source with its licence |
-| `tests/platform.spec.js` | Pages carry a Content-Security-Policy and the app runs under it without violations · `/api/health` answers · `/api/geo` without location headers, with Vercel's, and preferring Cloudflare's · `/api/monument-counts` refuses missing and oversized boxes · `/api/places` refuses an incomplete or oversized box · both refuse an unknown kind or kind of art · the PWA manifest and service worker |
+| `tests/platform.spec.js` | Pages carry a Content-Security-Policy and the app runs under it without violations · the map loads from the app and the tile server only · the licences of the software used are published · once installed, the app and its map open without a connection · `/api/health` answers · `/api/geo` without location headers, with Vercel's, and preferring Cloudflare's · `/api/monument-counts` refuses missing and oversized boxes · `/api/places` refuses an incomplete or oversized box · both refuse an unknown kind or kind of art · the PWA manifest and service worker |
 
-54 tests in all. The [test plan](docs/test-plan.md) describes the levels,
+57 tests in all. The [test plan](docs/test-plan.md) describes the levels,
 environments, test data, entry and exit criteria, and known gaps.
 
 ## Running them

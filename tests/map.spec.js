@@ -66,7 +66,7 @@ test('where the visible area holds too many places, shows counts at street level
   await expect(page.getByText('Zoom in to see monuments')).toBeHidden();
 });
 
-test('recovers by reloading once when an SDK chunk is gone after a deploy', async ({ page, stubNetwork }) => {
+test('recovers by reloading once when the map chunk is gone after a deploy', async ({ page, stubNetwork }) => {
   await stubNetwork();
   // A copy of the app kept from before a deploy asks for a chunk that is gone.
   // The chunk stays gone for as long as that page is open; the page loaded by
@@ -76,7 +76,7 @@ test('recovers by reloading once when an SDK chunk is gone after a deploy', asyn
     if (r.isNavigationRequest() && r.frame() === page.mainFrame()) pageLoads += 1;
   });
   let failed = 0;
-  await page.route(/\/assets\/MapView-[^/]+\.js$/, (route) => {
+  await page.route(/\/assets\/mapEngine-[^/]+\.js$/, (route) => {
     if (pageLoads > 1) return route.fallback();
     failed += 1;
     return route.fulfill({ status: 404, body: 'Not found' });
@@ -347,7 +347,7 @@ test('the map credits OpenStreetMap, linked to its copyright page', async ({ pag
   await stubNetwork();
   await page.goto('/');
   await waitForMap(page);
-  const credit = page.locator('.esri-attribution');
+  const credit = page.locator('.maplibregl-ctrl-attrib');
   await expect(credit).toContainText('© OpenStreetMap contributors');
   await expect(credit.getByRole('link', { name: 'OpenStreetMap' })).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
 });
