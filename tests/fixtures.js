@@ -252,6 +252,33 @@ export const test = base.extend({
   },
 });
 
+// holds() and pause() hold the only timed waits in the tests, so the lint
+// rule against fixed waits is switched off on those two lines only.
+
+/**
+ * Watches that something stays true for `ms`: for what must NOT happen, such
+ * as an extra request, a card or a label. It checks every 100 ms, so a brief
+ * change is caught too, not only the state at the end.
+ */
+export async function holds(page, ms, check) {
+  const end = Date.now() + ms;
+  await check();
+  while (Date.now() < end) {
+    await page.waitForTimeout(100); // eslint-disable-line playwright/no-wait-for-timeout -- an absence can only be watched for a while
+    await check();
+  }
+}
+
+/**
+ * A pause that is part of what the test does, not a wait for a state the
+ * test can see: a user's rhythm between wheel steps, or time for the map to
+ * draw what it has received (the app gives no signal for that). Say why at
+ * each use.
+ */
+export async function pause(page, ms) {
+  await page.waitForTimeout(ms); // eslint-disable-line playwright/no-wait-for-timeout -- the pause is part of the test
+}
+
 /** The map has finished loading when its controls appear. */
 export async function waitForMap(page) {
   await expect(page.getByRole('button', { name: 'Zoom in' })).toBeVisible({ timeout: 60_000 });

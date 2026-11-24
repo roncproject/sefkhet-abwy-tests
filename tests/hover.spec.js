@@ -5,7 +5,7 @@
  * The label is an HTML element over the map (the markers themselves are in a
  * WebGL canvas), marked aria-hidden as a visual aid, so it is found by class.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, BRUSSELS, ANTWERP, ARTWORK, MURAL } from './fixtures.js';
+import { test, expect, waitForMap, holds, DEVICE, PLACES, BRUSSELS, ANTWERP, ARTWORK, MURAL } from './fixtures.js';
 
 test.use({ permissions: ['geolocation'], geolocation: DEVICE });
 
@@ -53,8 +53,7 @@ test('with a card open, other markers still get a label, the open one does not',
 
   // Resting on the open monument: its card already says it all.
   await page.mouse.move(x + 1, y + 1);
-  await page.waitForTimeout(800);
-  await expect(label).toBeHidden();
+  await holds(page, 800, () => expect(label).toBeHidden());
 
   // Resting on its neighbour: a label, with the card still open.
   await expect(async () => {
@@ -106,8 +105,7 @@ test.describe('on a touch screen', () => {
       await page.touchscreen.tap(x, y);
       await expect(card).toBeVisible({ timeout: 1_000 });
     }).toPass({ timeout: 15_000 });
-    await page.waitForTimeout(500);
-    await expect(page.locator('.map-label')).toHaveCount(0);
+    await holds(page, 500, () => expect(page.locator('.map-label')).toHaveCount(0));
   });
 });
 

@@ -4,7 +4,7 @@
  * API for its kinds only; the count circles follow the filter too; with
  * everything off, the map is empty and nothing is asked for.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, MURAL, POEM } from './fixtures.js';
+import { test, expect, waitForMap, holds, pause, DEVICE, PLACES, ARTWORK, MURAL, POEM } from './fixtures.js';
 
 test.use({ permissions: ['geolocation'], geolocation: DEVICE });
 
@@ -46,10 +46,9 @@ test('hiding public art asks for monuments only, and closes an open artwork card
   await expect(card).toBeHidden();
 
   // The artwork's marker is gone: a tap on its place opens nothing.
-  await page.waitForTimeout(500);
+  await pause(page, 500);  // time for the map to draw without the artwork
   await page.mouse.click(x, y);
-  await page.waitForTimeout(500);
-  await expect(card).toBeHidden();
+  await holds(page, 500, () => expect(card).toBeHidden());
 });
 
 test('everything can be turned off: no requests, an empty map and a hint; on again drops the filter', async ({ page, stubNetwork }) => {
@@ -68,16 +67,14 @@ test('everything can be turned off: no requests, an empty map and a hint; on aga
   // Nothing is asked for while everything is off, also after moving the map.
   const asked = placesRequests.length + countsRequests.length;
   await page.getByRole('button', { name: 'Zoom out' }).click();
-  await page.waitForTimeout(1_500);
-  expect(placesRequests.length + countsRequests.length).toBe(asked);
+  await holds(page, 1_500, () => expect(placesRequests.length + countsRequests.length).toBe(asked));
 
   // The artwork's marker is gone: a tap on its place opens nothing.
   await page.getByRole('button', { name: 'Zoom in' }).click();
-  await page.waitForTimeout(1_000);
+  await pause(page, 1_000);  // the zoom animation; with everything off, no request shows its end
   const { x, y } = await mapCentre(page);
   await page.mouse.click(x, y);
-  await page.waitForTimeout(500);
-  await expect(page.getByRole('region', { name: `Artwork: ${ARTWORK.name}` })).toBeHidden();
+  await holds(page, 500, () => expect(page.getByRole('region', { name: `Artwork: ${ARTWORK.name}` })).toBeHidden());
 
   await kindButton(page, 'Monuments').click();
   await kindButton(page, 'Public art').click();
@@ -90,7 +87,7 @@ test('the count circles follow the filter', async ({ page, stubNetwork }) => {
   await page.goto('/');
   await waitForMap(page);
   await expect.poll(() => countsRequests.length).toBeGreaterThan(0);
-  expect(countsRequests.at(-1).kinds).toBe(null);
+  expect(countsRequests.at(-1).kinds).toBeNull();
 
   await kindButton(page, 'Monuments').click();
   await expect.poll(() => countsRequests.at(-1)?.kinds).toBe('artwork');
@@ -114,7 +111,7 @@ test('the kinds of public art open under Public art and filter on their own', as
   await expect(groups.getByRole('button', { name: 'Murals' })).toHaveAttribute('aria-pressed', 'false');
   await expect(kindButton(page, 'Public art')).toHaveAttribute('aria-pressed', 'mixed');
   await expect.poll(() => placesRequests.at(-1)?.art).toBe('memorial,other,poetry,relief,sculpture');
-  expect(placesRequests.at(-1).kinds).toBe(null);
+  expect(placesRequests.at(-1).kinds).toBeNull();
 
   // Public art while half on: all on again, no filter.
   await kindButton(page, 'Public art').click();

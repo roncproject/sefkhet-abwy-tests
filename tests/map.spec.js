@@ -8,7 +8,7 @@
  * catch swapped latitude and longitude. The first stubbed monument sits at the
  * device position, which is the centre of the map, so a click there hits it.
  */
-import { test, expect, waitForMap, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP, WALLONIA, LUXEMBOURG, WITTE_HUIS, POEM } from './fixtures.js';
+import { test, expect, waitForMap, holds, pause, DEVICE, PLACES, ARTWORK, BRUSSELS, ANTWERP, WALLONIA, LUXEMBOURG, WITTE_HUIS, POEM } from './fixtures.js';
 
 async function mapCentre(page) {
   const box = await page.getByRole('application', { name: 'Map centred on your location' }).boundingBox();
@@ -228,11 +228,16 @@ test('a Luxembourg monument shows Luxembourgish and French side by side, its pro
 });
 
 /** The device fix (accuracy 20 m) opens at zoom 17; four steps out is zoom 13, below street level. */
-async function zoomOutBelowStreetLevel(page) {
-  for (let i = 0; i < 4; i++) {
+async function zoomOutBelowStreetLevel(page, { placesRequests, countsRequests }) {
+  // Street level: each step asks for the larger area once the zoom has settled.
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  for (let i = 0; i < 3; i++) {
+    const seen = placesRequests.length;
     await page.getByRole('button', { name: 'Zoom out' }).click();
-    await page.waitForTimeout(400);
+    await expect.poll(() => placesRequests.length).toBeGreaterThan(seen);
   }
+  await page.getByRole('button', { name: 'Zoom out' }).click();
+  await expect.poll(() => countsRequests.at(-1)?.zoom).toBe(13);
 }
 
 test('below street level, asks for counts in the visible area instead of monuments', async ({ page, stubNetwork }) => {
@@ -242,7 +247,7 @@ test('below street level, asks for counts in the visible area instead of monumen
   await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
   expect(countsRequests).toEqual([]);
 
-  await zoomOutBelowStreetLevel(page);
+  await zoomOutBelowStreetLevel(page, { placesRequests, countsRequests });
   await expect.poll(() => countsRequests.at(-1)?.zoom).toBe(13);
   const { west, south, east, north } = countsRequests.at(-1);
   expect(west).toBeLessThan(DEVICE.longitude);
@@ -251,8 +256,7 @@ test('below street level, asks for counts in the visible area instead of monumen
   expect(north).toBeGreaterThan(DEVICE.latitude);
 
   const settled = placesRequests.length;
-  await page.waitForTimeout(1_500);
-  expect(placesRequests.length).toBe(settled);
+  await holds(page, 1_500, () => expect(placesRequests).toHaveLength(settled));
   // The counts show where monuments are, so the hint stays away.
   await expect(page.getByText('Zoom in to see monuments')).toBeHidden();
 
@@ -264,7 +268,7 @@ test('tapping a count zooms in on it', async ({ page, stubNetwork }) => {
   const { placesRequests, countsRequests } = await stubNetwork();
   await page.goto('/');
   await waitForMap(page);
-  await zoomOutBelowStreetLevel(page);
+  await zoomOutBelowStreetLevel(page, { placesRequests, countsRequests });
   await expect.poll(() => countsRequests.at(-1)?.zoom).toBe(13);
 
   // The first count sits at the map centre. Two levels in is zoom 15, street
@@ -279,13 +283,13 @@ test('tapping a count zooms in on it', async ({ page, stubNetwork }) => {
 });
 
 test('says to zoom in when no counts are in view', async ({ page, stubNetwork }) => {
-  const { countsRequests } = await stubNetwork({ cells: [] });
+  const { placesRequests, countsRequests } = await stubNetwork({ cells: [] });
   await page.goto('/');
   await waitForMap(page);
   const hint = page.getByText('Zoom in to see monuments');
   await expect(hint).toBeHidden();
 
-  await zoomOutBelowStreetLevel(page);
+  await zoomOutBelowStreetLevel(page, { placesRequests, countsRequests });
   await expect.poll(() => countsRequests.length).toBeGreaterThan(0);
   await expect(hint).toBeVisible();
 
@@ -309,7 +313,7 @@ test('the mouse wheel zooms one whole level per step', async ({ page, stubNetwor
   await expect.poll(() => width() / start).toBeCloseTo(2, 1);
 
   const after = placesRequests.length;
-  await page.waitForTimeout(300);
+  await pause(page, 300);  // a new wheel gesture, not the tail of the last one
   await page.mouse.wheel(0, -100);
   await expect.poll(() => placesRequests.length).toBeGreaterThan(after);
   await expect.poll(() => width() / start).toBeCloseTo(1, 1);
@@ -329,11 +333,10 @@ test('quick wheel steps ask for the final zoom level, not for each step', async 
   // The device fix opens at zoom 17; three steps out is 14, still street level.
   for (let i = 0; i < 3; i++) {
     await page.mouse.wheel(0, 100);
-    await page.waitForTimeout(120);
+    await pause(page, 120);  // a quick user's rhythm between wheel steps
   }
   await expect.poll(() => width() / start, { timeout: 10_000 }).toBeCloseTo(8, 0);
-  await page.waitForTimeout(500);
-  expect(placesRequests.length - seen).toBeLessThanOrEqual(2);
+  await holds(page, 500, () => expect(placesRequests.length - seen).toBeLessThanOrEqual(2));
 });
 
 test('zoom in and zoom out move the map', async ({ page, stubNetwork }) => {
