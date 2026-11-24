@@ -75,7 +75,7 @@ servers:
 
 ## 5. Test inventory
 
-57 tests.
+58 tests.
 
 | File | Test | Proves |
 |---|---|---|
@@ -102,6 +102,7 @@ servers:
 | | Below street level, asks for counts instead of monuments | The zoomed-out mode requests counts for the visible area |
 | | Tapping a count zooms in on it | Counts lead to the individual monuments |
 | | Says to zoom in when no counts are in view | The hint appears only when nothing is shown |
+| | The mouse wheel zooms one whole level per step | Tiles stay sharp, with no correction after the zoom |
 | | Zoom in and zoom out move the map | The controls work and each change reloads monuments |
 | | "Centre on my location" returns after panning | The re-centre control |
 | | A wall poem from Wikimedia Commons: named after its poet, approximate, linked to the photo | The card of a work without a title, an approximate position and the Commons credit |

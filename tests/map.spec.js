@@ -293,6 +293,28 @@ test('says to zoom in when no counts are in view', async ({ page, stubNetwork })
   await expect(hint).toBeHidden();
 });
 
+test('the mouse wheel zooms one whole level per step', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork();
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  const width = () => { const r = placesRequests.at(-1); return r.east - r.west; };
+  const start = width();
+  const { x, y } = await mapCentre(page);
+  await page.mouse.move(x, y);
+
+  const seen = placesRequests.length;
+  await page.mouse.wheel(0, 100);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(seen);
+  await expect.poll(() => width() / start).toBeCloseTo(2, 1);
+
+  const after = placesRequests.length;
+  await page.waitForTimeout(300);
+  await page.mouse.wheel(0, -100);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(after);
+  await expect.poll(() => width() / start).toBeCloseTo(1, 1);
+});
+
 test('zoom in and zoom out move the map', async ({ page, stubNetwork }) => {
   const { placesRequests } = await stubNetwork();
   await page.goto('/');
