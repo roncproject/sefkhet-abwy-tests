@@ -1,8 +1,9 @@
 # SEFKHET-ABWY tests
 
-End-to-end tests for [SEFKHET-ABWY](https://www.sefkhet-abwy.dev), a map of the
-protected heritage around you: the Dutch national monuments (rijksmonumenten),
-Brussels, Flanders, Wallonia and Luxembourg.
+End-to-end tests for [SEFKHET-ABWY](https://www.sefkhet-abwy.dev), a web app in
+a private repo on this account. This is a map of the protected heritage around
+you: the Dutch national monuments (rijksmonumenten) and other public art, also a
+selection of objects in Antwerp, Brussels, Wallonia, Luxembourg and Flanders.
 
 The tests drive a running copy of the app in Chromium and over HTTP, with
 [Playwright](https://playwright.dev). They are black-box tests: they need only
