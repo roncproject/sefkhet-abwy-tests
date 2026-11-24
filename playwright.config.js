@@ -11,7 +11,7 @@ import { defineConfig, devices } from '@playwright/test';
  * Production is refused: these tests are for a local build or the acceptance
  * environment, never the live site.
  *
- * Chromium only: the ArcGIS SDK needs WebGL2, which headless Firefox and
+ * Chromium only: the map library needs WebGL2, which headless Firefox and
  * WebKit do not provide reliably.
  */
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:4173';

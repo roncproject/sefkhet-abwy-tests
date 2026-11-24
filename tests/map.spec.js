@@ -66,7 +66,7 @@ test('where the visible area holds too many places, shows counts at street level
   await expect(page.getByText('Zoom in to see monuments')).toBeHidden();
 });
 
-test('recovers by reloading once when an SDK chunk is gone after a deploy', async ({ page, stubNetwork }) => {
+test('recovers by reloading once when the map chunk is gone after a deploy', async ({ page, stubNetwork }) => {
   await stubNetwork();
   // A copy of the app kept from before a deploy asks for a chunk that is gone.
   // The chunk stays gone for as long as that page is open; the page loaded by
@@ -76,7 +76,7 @@ test('recovers by reloading once when an SDK chunk is gone after a deploy', asyn
     if (r.isNavigationRequest() && r.frame() === page.mainFrame()) pageLoads += 1;
   });
   let failed = 0;
-  await page.route(/\/assets\/MapView-[^/]+\.js$/, (route) => {
+  await page.route(/\/assets\/mapEngine-[^/]+\.js$/, (route) => {
     if (pageLoads > 1) return route.fallback();
     failed += 1;
     return route.fulfill({ status: 404, body: 'Not found' });
@@ -293,6 +293,49 @@ test('says to zoom in when no counts are in view', async ({ page, stubNetwork })
   await expect(hint).toBeHidden();
 });
 
+test('the mouse wheel zooms one whole level per step', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork();
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  const width = () => { const r = placesRequests.at(-1); return r.east - r.west; };
+  const start = width();
+  const { x, y } = await mapCentre(page);
+  await page.mouse.move(x, y);
+
+  const seen = placesRequests.length;
+  await page.mouse.wheel(0, 100);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(seen);
+  await expect.poll(() => width() / start).toBeCloseTo(2, 1);
+
+  const after = placesRequests.length;
+  await page.waitForTimeout(300);
+  await page.mouse.wheel(0, -100);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(after);
+  await expect.poll(() => width() / start).toBeCloseTo(1, 1);
+});
+
+test('quick wheel steps ask for the final zoom level, not for each step', async ({ page, stubNetwork }) => {
+  const { placesRequests } = await stubNetwork();
+  await page.goto('/');
+  await waitForMap(page);
+  await expect.poll(() => placesRequests.length).toBeGreaterThan(0);
+  const width = () => { const r = placesRequests.at(-1); return r.east - r.west; };
+  const start = width();
+  const seen = placesRequests.length;
+  const { x, y } = await mapCentre(page);
+  await page.mouse.move(x, y);
+
+  // The device fix opens at zoom 17; three steps out is 14, still street level.
+  for (let i = 0; i < 3; i++) {
+    await page.mouse.wheel(0, 100);
+    await page.waitForTimeout(120);
+  }
+  await expect.poll(() => width() / start, { timeout: 10_000 }).toBeCloseTo(8, 0);
+  await page.waitForTimeout(500);
+  expect(placesRequests.length - seen).toBeLessThanOrEqual(2);
+});
+
 test('zoom in and zoom out move the map', async ({ page, stubNetwork }) => {
   const { placesRequests } = await stubNetwork();
   await page.goto('/');
@@ -347,7 +390,7 @@ test('the map credits OpenStreetMap, linked to its copyright page', async ({ pag
   await stubNetwork();
   await page.goto('/');
   await waitForMap(page);
-  const credit = page.locator('.esri-attribution');
+  const credit = page.locator('.maplibregl-ctrl-attrib');
   await expect(credit).toContainText('© OpenStreetMap contributors');
   await expect(credit.getByRole('link', { name: 'OpenStreetMap' })).toHaveAttribute('href', 'https://www.openstreetmap.org/copyright');
 });
