@@ -26,4 +26,16 @@ export default [
     },
   },
   { files: ['tests/**'], ...playwright.configs['flat/recommended'] },
+  {
+    files: ['tests/**'],
+    rules: {
+      // Sonar's check does not see expect.poll() or an assertion inside a
+      // helper; Playwright's own expect-expect does, so that one stays on.
+      'sonarjs/assertions-in-tests': 'off',
+      'playwright/expect-expect': ['warn', { assertFunctionNames: ['holds'] }],
+      // A test may skip itself where it cannot apply (the geo headers on
+      // Vercel); an unconditional skip is still reported.
+      'playwright/no-skipped-test': ['warn', { allowConditional: true }],
+    },
+  },
 ];

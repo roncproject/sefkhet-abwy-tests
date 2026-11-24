@@ -2,7 +2,7 @@
  * The parts around the app: the server functions, the security headers and
  * the PWA install files.
  */
-import { test, expect, waitForMap } from './fixtures.js';
+import { test, expect, waitForMap, holds } from './fixtures.js';
 
 test('pages carry a Content-Security-Policy that the app runs under without violations', async ({ page, stubNetwork }) => {
   const { placesRequests, countsRequests } = await stubNetwork();
@@ -26,10 +26,7 @@ test('pages carry a Content-Security-Policy that the app runs under without viol
     await page.getByRole('button', { name: 'Zoom in' }).click();
     await expect.poll(() => placesRequests.length, { timeout: 3_000 }).toBeGreaterThan(0);
   }).toPass({ timeout: 30_000 });
-  await page.waitForTimeout(1_000);
-
-  const violations = await page.evaluate(() => window.__violations);
-  expect(violations).toEqual([]);
+  await holds(page, 1_000, async () => expect(await page.evaluate(() => window.__violations)).toEqual([]));
 });
 
 test('the map loads from the app and the tile server only', async ({ page, baseURL, stubNetwork }) => {

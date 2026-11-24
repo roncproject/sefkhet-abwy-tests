@@ -151,6 +151,12 @@ servers:
   For example, the chunk-recovery test was rewritten when a newer browser
   exposed a timing assumption, and the CSP test now zooms in one step at a
   time, since a click during a zoom animation can be lost on a slow machine.
+- **No fixed waits.** A test waits for a condition it can see, usually the next
+  stubbed request. Where something must *not* happen, `holds()` keeps checking
+  for a set time. Where a pause is part of the test itself (a user's rhythm,
+  time for the map to draw), `pause()` is used and the reason is stated. These
+  two helpers are the only places with a timed wait; `npm run lint` reports any
+  other.
 
 ## 7. Process
 
@@ -173,3 +179,4 @@ servers:
 | No real mobile devices | Touch and small screens are only covered by desktop Chromium | A mobile viewport project, then a device cloud for releases |
 | No accessibility audit | Contrast or labelling problems go unnoticed | `@axe-core/playwright` on the map and every panel |
 | No visual checks | Layout regressions go unnoticed | Screenshot comparison for the map and panels |
+| One timing-sensitive test | *Quick wheel steps ask for the final zoom level* can fail on a busy machine: steps 120 ms apart sometimes count as separate moves. It passes in normal runs, but fails when the suite runs several times in a row | A signal from the map when it is idle, so the test can wait for it instead of relying on timing |
