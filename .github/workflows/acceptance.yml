@@ -27,11 +27,10 @@ jobs:
 
       - run: npm ci
 
-      # ESLint with Playwright's and SonarQube's rules. Reports only for now
-      # (issue #79 in the app's repository); it will block once clean.
+      # ESLint with Playwright's and SonarQube's rules: an error fails the
+      # check (issue #79 in the app's repository); warnings only report.
       - name: Lint
         run: npm run lint
-        continue-on-error: true
 
       - name: Tests load
         run: npx playwright test --list
