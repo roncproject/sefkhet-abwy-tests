@@ -49,7 +49,7 @@ In PowerShell: `$env:BASE_URL = "http://localhost:4173"; npm test`
 `BASE_URL` defaults to `http://localhost:4173`.
 
 **Code checks:** `npm run lint` runs ESLint with Playwright's and SonarQube's rules
-(`eslint.config.js`). CI reports the findings on every pull request.
+(`eslint.config.js`). On every pull request, a lint error fails the check.
 
 **Against a protected deployment**, also set `VERCEL_BYPASS` to the
 deployment's protection bypass value. It is sent only to the app's own address.
