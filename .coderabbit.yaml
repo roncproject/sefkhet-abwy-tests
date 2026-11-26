@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit, the AI reviewer on pull requests. Free for public repositories,
+# with full line-by-line reviews. Below 10 stars a review starts when someone
+# comments "@coderabbitai review" on the pull request.
+language: en-GB
+reviews:
+  profile: chill
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!package-lock.json"
+  path_instructions:
+    - path: "tests/**"
+      instructions: >-
+        Tests wait for a condition they can see (usually the next stubbed
+        request), never for a fixed time; holds() and pause() in
+        tests/fixtures.js are the only timed waits. Every network call is
+        stubbed. Tests never run against the live site.
+    - path: ".github/**"
+      instructions: >-
+        This repository is public: no secrets in files or logs, and the
+        workflow never uploads traces or reports.
+chat:
+  auto_reply: true
+knowledge_base:
+  opt_out: true

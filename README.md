@@ -51,6 +51,9 @@ In PowerShell: `$env:BASE_URL = "http://localhost:4173"; npm test`
 **Code checks:** `npm run lint` runs ESLint with Playwright's and SonarQube's rules
 (`eslint.config.js`). On every pull request, a lint error fails the check.
 
+**AI review:** CodeRabbit reviews pull requests here (`.coderabbit.yaml`). Comment
+`@coderabbitai review` on a pull request to start a review.
+
 **Against a protected deployment**, also set `VERCEL_BYPASS` to the
 deployment's protection bypass value. It is sent only to the app's own address.
 
